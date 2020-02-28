@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.ORG//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dta/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.scau.lxy.netdisk.repository.FileRepository">
+    <insert id="add" parameterType="File">
+        insert into file(name,path,type,size,uid) values(#{name},#{path},#{type},#{size},#{uid})
+    </insert>
+
+    <delete id="deleteById" parameterType="long">
+        delete from file where id = #{id}
+    </delete>
+
+    <select id="findById" resultType="File">
+        select * from file where id = #{id}
+    </select>
+
+    <select id="findByUid" resultType="File">
+        select * from file where uid = #{uid}
+    </select>
+
+    <select id="findByPath" resultType="File">
+        select * from file where uid = #{uid} and path = #{path}
+    </select>
+
+    <select id="fuzzyQueryByPath" resultType="File">
+        select * from file where path like concat(#{path},'%')
+    </select>
+
+    <select id="findByName" resultType="File">
+        select * from file where uid = #{uid} and name like concat('%',#{name},'%')
+    </select>
+
+    <select id="findByType" resultType="File">
+        select * from file where uid = #{uid} and type = #{type}
+    </select>
+
+    <select id="findByNameAndType" resultType="File">
+        select * from file where uid = #{uid} and type = #{type} and name like concat('%',#{name},'%')
+    </select>
+
+    <select id="findByNameAndPath" resultType="File">
+        select * from file where name = #{name} and path = #{path}
+    </select>
+
+    <update id="updateName">
+        update file set name = #{name} where id = #{id}
+    </update>
+
+    <update id="updatePath">
+        update file set path = #{path} where id = #{id}
+    </update>
+
+    <select id="count" resultType="int">
+        select count(id) from file
+    </select>
+
+</mapper>

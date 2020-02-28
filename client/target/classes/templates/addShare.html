@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <script th:src="@{/layui/layui.js}"></script>
+    <script th:src="@{/js/urlDecode.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+</head>
+
+
+<body>
+<div class="layui-tab">
+    <ul class="layui-tab-title">
+        <li class="layui-this">链接分享</li>
+        <li>发送给好友</li>
+    </ul>
+    <div class="layui-tab-content">
+        <!-- 链接分享 -->
+        <div class="layui-tab-item layui-show">
+            <form class="layui-form" id="asform" onsubmit="return false">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">分享形式:</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="code" value="1" title="有提取码" checked>
+                        <input type="radio" name="code" value="0" title="无提取码">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">有效期:</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="time" value="2" title="永久有效" checked>
+                        <input type="radio" name="time" value="1" title="7天">
+                        <input type="radio" name="time" value="0" title="1天">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" onclick="addShare()">创建链接</button>
+                        <button type="cancel" class="layui-btn layui-btn-primary">取消</button>
+                    </div>
+                </div>
+            </form>
+
+            <form class="layui-form" id="sdform" onsubmit="return false" style="display: none">
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="padding-left: 0px;padding-right: 10px;width: 50px;">链&nbsp;&nbsp;&nbsp;&nbsp;接:</label>
+                    <input type="text" id="link" autocomplete="off" class="layui-input" style="width:300px;">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="padding-left: 0px;padding-right: 10px;width: 50px;">提取码:</label>
+                    <input type="text" id="code" autocomplete="off" class="layui-input" style="width:50px;">
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block" style="padding-top: 20px;">
+                        <button class="layui-btn" onclick="copyLink()">复制链接及提取码</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="layui-tab-item">
+            //待补充
+        </div>
+    </div>
+</div>
+
+<script>
+    //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+    layui.use('element', function(){
+        var element = layui.element;
+    });
+
+    layui.use('form', function(){
+        var form = layui.form;
+    });
+
+    //创建分享
+    function addShare() {
+        var result=getParameter()
+        var uid=result["uid"]
+        var ffid=result["ffid"]
+        var fid=result["fid"]
+        if(ffid==""){
+            ffid="null"
+        }
+        if(fid==""){
+            fid="null"
+        }
+
+        var code = $("input[name='code']:checked").attr("value");
+        var time = $("input[name='time']:checked").attr("value");
+        console.log(uid)
+        console.log(ffid)
+        console.log(fid)
+
+
+        $.ajax({
+            url: '/myshare/add',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                code: code,
+                time: time,
+                uid:uid,
+                fid:fid,
+                ffid:ffid
+            },
+            success: function (msg) {
+                var elem=document.getElementById("asform")
+                elem.style.display="none"
+
+                document.getElementById("link").value=msg.link
+                document.getElementById("code").value=msg.code
+                document.getElementById("sdform").style.display="inline"
+            },
+            error: function () {
+                layer.msg('加速处理中',{
+                    time:1000
+                })
+            }
+        })
+    }
+
+    //复制链接和提取码
+    function copyLink() {
+        var link=document.getElementById("link").value
+        var code=document.getElementById("code").value
+        var all=link+" 提取码:"+code
+
+        var oInput = document.createElement("input");
+        oInput.value = all;
+        document.body.appendChild(oInput);
+        oInput.select(); // 选择对象
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        oInput.className = "oInput";
+        oInput.style.display = "none";
+
+        layer.msg('复制成功',{time: 500})
+
+        setTimeout(function () {
+            window.parent.location.reload()
+        },1000)
+    }
+</script>
+</body>
+</html>

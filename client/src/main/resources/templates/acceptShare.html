@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/download.js}"></script>
+    <script type="text/javascript" th:src="@{/js/copyto.js}"></script>
+    <script type="text/javascript" th:src="@{/js/timeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/sizeformat.js}"></script>
+
+    <cite th:text="${session.user.id}" id="uid1" hidden></cite>
+    <cite th:text="${session.syspath}" id="path1" hidden></cite>
+</head>
+
+<body>
+<form class="layui-form" id="myform" style="position: relative;margin-top: 2%;margin-right: 50%;" onsubmit="return false">
+    <div class="layui-form-item">
+        <label class="layui-form-label">分享链接：</label>
+        <div class="layui-input-block">
+            <input type="text" id="link" lay-verify="required" required="required" autocomplete="off" placeholder="请输入" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">提取码：</label>
+        <div class="layui-input-block">
+            <input type="text" id="code" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="submit" class="layui-btn" onclick="confirm()">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+
+<div id="mytable" style="position:relative;top: -10px;display: none;width: 100%;">
+    <table id="file" lay-filter="file"></table>
+
+    <script>
+        layui.use('element', function () {
+            var element = layui.element;
+        });
+    </script>
+
+    <!--根据文件类型在前面&后面显示图标,"nf-icon"默认隐藏，新建文件夹-->
+    <script type="text/html" id="fileicon">
+        <!--文件夹-->
+        {{# if(d.size==null){ }}
+        <i class="fa fa-folder fa-2x" style="color: yellow;position: relative;top: 10%;">&nbsp;</i>
+        <a style="color: grey;position: relative;top: 0%;">{{ d.name }}</a>
+
+        <!--  文件  -->
+        {{# }else{ }}
+        <i class="fa fa-file fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
+        <a style="color: grey;position: relative;top: 0%;">{{ d.name }}</a>
+        {{# } }}
+
+    </script>
+
+    <!--文件大小为空时-->
+    <script type="text/html" id="size">
+        {{# if(d.size==null){ }}
+        <p>{{ d.size='-' }}</p>
+        {{# }else{ }}
+        <p>{{ sizeformat(d.size) }}</p>
+        {{# } }}
+    </script>
+
+    <!--时间格式转换-->
+    <script type="text/html" id="timeformat">
+        {{# d.modifyTime = timeformat(d.modifyTime) }}
+        <p>{{ d.modifyTime }}</p>
+    </script>
+
+    <!--头部工具栏-->
+    <script type="text/html" id="headtoolbar">
+        <div>
+            <div style="float: left;">
+                <button class="layui-btn layui-btn-sm" onclick="downloaddemo()">下载</button>
+                <button class="layui-btn layui-btn-sm" onclick="copyto()">保存</button>
+            </div>
+        </div>
+    </script>
+</div>
+</body>
+
+
+<script type="text/javascript">
+    function confirm() {
+        var link=document.getElementById("link").value
+        var code=document.getElementById("code").value
+
+        console.log(link)
+        console.log(code)
+
+        document.getElementById("myform").style.display="none";
+        document.getElementById("mytable").style.display="inline-block";
+
+        //动态表格
+        layui.use('table', function () {
+            var table = layui.table;
+
+            table.render({
+                elem: '#file'
+                , url: '/myshare/check' //数据接口
+                , method: 'get'
+                , where: {
+                    link:link,
+                    code:code
+                }
+                , height: 'full-20'
+                , skin: 'nob'
+                , even: true
+                , size: 'lg'
+                , toolbar: '#headtoolbar' //头部工具栏
+                , defaultToolbar:false
+                , cols: [
+                    [
+                        {type: 'checkbox', title: '全选', unresize: 'true'}
+                        , {
+                        field: 'name',
+                        title: '文件名',
+                        width: '40%',
+                        unresize: 'true',
+                        sort: true,
+                        templet: '#fileicon'
+                    }
+                        , {
+                        field: 'size',
+                        title: '大小',
+                        width: '20%',
+                        unresize: 'true',
+                        sort: true,
+                        templet: '#size'
+                    }
+                        , {
+                        field: 'modifyTime',
+                        title: '修改日期',
+                        width: '40%',
+                        unresize: 'true',
+                        sort: true,
+                        templet: '#timeformat'
+                    }
+                    ]
+                ]
+                , id: 'ftable'
+            });
+        });
+    }
+</script>
+</html>

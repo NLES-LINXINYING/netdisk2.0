@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>音乐</title>
+    <cite id="uid1" th:text="${session.id}" hidden></cite>
+    <cite id="path1" th:text="${session.syspath}" hidden></cite>
+    <cite id="path2" th:text="${session.curpath}" hidden></cite>
+
+
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+
+    <!--引用部分代码，便于html和js分开-->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/timeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/download.js}"></script>
+    <script type="text/javascript" th:src="@{/js/share.js}"></script>
+    <script type="text/javascript" th:src="@{/js/download.js}"></script>
+    <script type="text/javascript" th:src="@{/js/delete.js}"></script>
+    <script type="text/javascript" th:src="@{/js/rename.js}"></script>
+    <script type="text/javascript" th:src="@{/js/sizeformat.js}"></script>
+</head>
+
+
+<body>
+<div class="layui-body" style="bottom: 0;overflow-y: hidden;left:0;border:none;">
+    <div>
+        <table id="file" lay-filter="file" style="border:none;"></table>
+    </div>
+</div>
+
+
+
+<script>
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    layui.use('table', function () {
+        var table = layui.table;
+        var uid=document.getElementById("uid1").innerText
+
+        table.render({
+            elem: '#file'
+            , url: '/music/findAll'
+            , where: {
+                uid: uid
+            }
+            , height: 'full-20'
+            , skin: 'nob' //无边框
+            , even: true
+            , size: 'lg'
+            , toolbar: '#headtoolbar' //头部工具栏
+            , defaultToolbar: []
+            , cols: [
+                [ //表头
+                    {type: 'checkbox', title: '全选', unresize: 'true'}
+                    , {field: 'name', title: '文件名', width: '40%', unresize: 'true', sort: true, templet: '#fileicon'}
+                    , {field: 'size', title: '大小', width: '20%', unresize: 'true', sort: true,templet: '#size'}
+                    , {
+                    field: 'modifyTime',
+                    title: '修改日期',
+                    width: '40%',
+                    unresize: 'true',
+                    sort: true,
+                    templet: '#timeformat'
+                }
+                ]
+            ]
+            , id: 'ftable'
+        });
+
+        //重载表格数据
+        var $ = layui.$, active = {
+            //搜索框
+            reload1: function () {
+                var name = document.getElementById("search1").value;
+                console.log(name)
+                console.log(uid)
+
+                //执行重载
+                table.reload('ftable', {
+                    url: '/music/findByNameAndType'
+                    , where: {
+                        uid: uid,
+                        name: name
+                    }
+                });
+            }
+        };
+
+        $('.reloadbtn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+
+<!--文件大小为空时-->
+<script type="text/html" id="size">
+    <p>{{ sizeformat(d.size) }}</p>
+</script>
+
+<!--  文件重命名表单  -->
+<form class="layui-form" id="renameform" style="display: none;">
+    <div class="layui-form-item" style="margin-top: 20px;margin-left:0px;">
+        <label class="layui-form-label" style="width: 90px;padding-right: 5px">新名字：</label>
+        <div class="layui-input-block">
+            <input type="text" required lay-verify="required" autocomplete="on"
+                   class="layui-input" id="ffname1" style="width:150px">
+        </div>
+    </div>
+</form>
+
+<!--头部工具栏-->
+<script type="text/html" id="headtoolbar">
+    <div>
+        <div style="float: left;">
+            <button class="layui-btn layui-btn-sm" onclick="back()">返回</button>
+            <button class="layui-btn layui-btn-sm" onclick="sharefunc()">分享</button>
+            <button class="layui-btn layui-btn-sm" onclick="downloaddemo()">下载</button>
+            <button class="layui-btn layui-btn-sm" onclick="deletefunc()">删除</button>
+            <button class="layui-btn layui-btn-sm" onclick="renamefunc()">重命名</button>
+        </div>
+
+        <!--搜索框、搜索按钮-->
+        <div style="float: right;">
+            <li style="float: left;position: relative;bottom: 5px;">
+                <input type="text" required lay-verify="required" placeholder="根据文件名搜索你的文件" autocomplete="off"
+                       class="layui-input" id="search1">
+            </li>
+            <li style="float: left;">
+                <span class="layui-icon layui-icon-search reloadbtn" style="font-size: 20px;" data-type="reload1"></span>
+            </li>
+        </div>
+    </div>
+</script>
+
+<!--时间格式转换-->
+<script type="text/html" id="timeformat">
+    <p>{{ timeformat(d.modifyTime) }}</p>
+</script>
+
+<!--根据文件类型在前面&后面显示图标,"nf-icon"默认隐藏，新建文件夹-->
+<script type="text/html" id="fileicon">
+    <i class="fa fa-file-audio-o fa-2x" style="color: #007DDB;position: relative;top: 10%;">&nbsp;</i>
+    <a id={{d.id}} style="color: grey;position: relative;top: 0%;" onmouseenter="mouseenter('{{d.id}}')"
+       onmouseleave="mouseleave('{{d.id}}')">{{ d.name }}</a>
+</script>
+
+</body>
+
+
+<script type="text/javascript">
+    function back() {
+        window.location.reload()
+    }
+    //文件名变色
+    function mouseenter(str) {
+        var name = document.getElementById(str);
+        name.style.color = '#17C4E2';
+    }
+    function mouseleave(str) {
+        var name = document.getElementById(str);
+        name.style.color = 'grey';
+    }
+</script>
+
+</html>
+

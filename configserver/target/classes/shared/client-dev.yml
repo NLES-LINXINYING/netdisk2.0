@@ -1,0 +1,35 @@
+server:
+  port: 8040
+  tomcat:
+    # 最大线程数
+    max-threads: 6
+    # 最小线程数
+    min-spare-threads: 3
+    # 队列长度
+    accept-count: 10
+    # 最大链接数
+    max-connections: 1000
+    #链接建立超时时间
+    connection-timeout: 30000
+spring:
+  application:
+    name: client
+  thymeleaf:
+    cache: false
+    mode: HTML5
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    prefix: classpath:/templates/
+    suffix: .html
+  servlet:
+    multipart:
+      max-File-Size: 1000MB
+      max-Request-Size: 1000MB
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+

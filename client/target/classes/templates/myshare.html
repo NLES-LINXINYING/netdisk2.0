@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>我的分享</title>
+
+
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+
+    <!--引用部分代码，便于html和js分开-->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/upload.js}"></script>
+    <script type="text/javascript" th:src="@{/js/timeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/findName.js}"></script>
+</head>
+
+
+<body>
+<div class="layui-body" style="bottom: 0;overflow-y: hidden;left:0;border:none;">
+    <div>
+        <table id="file" lay-filter="file" style="border:none;"></table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    //JavaScript代码区域
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    layui.use('table', function () {
+        var table = layui.table;
+
+        table.render({
+            elem: '#file'
+            , url: '/myshare/findAll'
+            , where: {
+                uid: 1
+            }
+            , height: 'full-20'
+            , skin: 'nob' //无边框
+            , even: true
+            , size: 'lg'
+            , toolbar: '#headtoolbar' //头部工具栏
+            , defaultToolbar: []
+            , cols: [
+                [
+                    {type: 'checkbox', title: '全选', unresize: 'true'}
+                    , {field: 'fid', title: '分享文件', width: '30%', unresize: 'true', sort: true, templet: '#fileicon'}
+                    , {field: 'timesOfBrowse', title: '浏览次数', width: '10%', unresize: 'true', align: 'center',sort: true}
+                    , {field: 'timesOfSave', title: '保存次数', width: '10%', unresize: 'true', sort: true}
+                    , {field: 'timesOfDownload', title: '下载次数', width: '10%', unresize: 'true', sort: true}
+                    , {field: 'timeOfShare', title: '分享时间', width: '20%', unresize: 'true', sort: true, templet: '#timeformat1'}
+                    , {field: 'timeOfInvalid', title: '失效时间', width: '20%', unresize: 'true', sort: true, templet: '#timeformat2'}
+                ]
+            ]
+            ,id:'ftable'
+        });
+    });
+</script>
+
+<!--头部工具栏-->
+<script type="text/html" id="headtoolbar">
+    <div>
+        <button class="layui-btn layui-btn-sm" onclick="notshare()">取消分享</button>
+    </div>
+</script>
+
+<!--时间格式转换-->
+<script type="text/html" id="timeformat1">
+    <p>{{ timeformat(d.timeOfShare) }}</p>
+</script>
+
+<script type="text/html" id="timeformat2">
+    <p>{{ timeformat(d.timeOfInvalid) }}</p>
+</script>
+
+<!--根据文件类型在前面&后面显示图标,"nf-icon"默认隐藏，新建文件夹-->
+<script type="text/html" id="fileicon">
+    {{# console.log(d) }}
+    {{# if(d.ffid == 0 && d.fid == 0){ }}
+    <i class="fa fa-chain-broken fa-2x" style="color: orangered;position: relative;top: 10%;">&nbsp;</i>
+    <a style="color: grey;position: relative;top: 0%;">分享的文件已被删除</a>
+    {{# } else if( d.ffid != 0 ){ }}
+    <i class="fa fa-link fa-2x" style="color: #007DDB;position: relative;top: 10%;">&nbsp;</i>
+    <a style="color: grey;position: relative;top: 0%;">{{ findFFname(d.ffid) }}</a>
+    {{# } else { }}
+    <i class="fa fa-link fa-2x" style="color: #007DDB;position: relative;top: 10%;">&nbsp;</i>
+    <a style="color: grey;position: relative;top: 0%;">{{ findFname(d.fid) }}</a>
+    {{# } }}
+</script>
+</body>
+
+
+<script type="text/javascript">
+    //取消分享
+    function notshare() {
+        var data = layui.table.checkStatus('ftable').data
+        var length = data.length
+
+        if(length==0){
+            layer.msg("请选择文件",{time:1000})
+        }else{
+            var mids=new Array();
+            var mi=0;
+            for(var i=0;i<length;i++){
+                mids[mi++]=data[i].id
+            }
+
+            layer.msg("是否确认删除这些分享链接？",
+                {
+                    btnAlign:'c',
+                    btn:["确认","取消"],
+                    btn1:function (index) {
+                        $.ajax({
+                            url: '/myshare/delete',
+                            type: 'post',
+                            data: {
+                                mids:mids.toString()
+                            },
+                            success: function () {
+                                layer.msg("删除成功", {time: 1000})
+                                layer.closeAll()
+                                window.location.reload();
+                            },
+                            error: function () {
+                                layer.msg("请求失败", {time: 1000})
+                                layer.closeAll()
+                            }
+                        })
+                        //layer.close(index)
+                    },
+                    btn2:function (index) {
+                        layer.close(index)
+                    }
+                }
+                )
+        }
+    }
+</script>
+
+</html>

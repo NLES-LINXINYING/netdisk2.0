@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>全部文件</title>
+
+
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+    <cite id="uid1" th:text="${session.id}" hidden></cite>
+    <cite id="uname1" th:text="${session.user.name}" hidden></cite>
+    <cite id="path1" th:text="${session.syspath}" hidden></cite>
+    <cite id="path2" th:text="${session.curpath}" hidden></cite>
+
+    <!--引用部分代码，便于html和js分开-->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+</head>
+
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!-- 内容头部区域 -->
+    <div class="layui-header" style="margin-left: -200px;">
+        <!--左头部-->
+        <ul class="layui-nav layui-layout-left">
+            <!--主要功能-->
+            <li class="layui-nav-item"><a class="reloadbtn" data-type="reload2">返回上一级</a></li>
+            <li class="layui-nav-item">
+                <a href="#2">上传</a>
+                <dl class="layui-nav-child" onsubmit="return false">
+                    <dd><a id="uploadfile">上传文件</a></dd>
+                    <dd>
+                        <a id="uploadfolder" onclick="uploadfolder()">上传文件夹</a>
+                        <input type="file" id="folder" webkitdirectory style="display: none">
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a onclick="newFolder()">新建文件夹</a></li>
+            <li class="layui-nav-item"><a onclick="sharefunc()">分享</a></li>
+            <li class="layui-nav-item"><a onclick="downloaddemo()">离线下载</a></li>
+            <li class="layui-nav-item"><a onclick="copyto()">复制到</a></li>
+            <li class="layui-nav-item"><a onclick="moveto()">移动到</a></li>
+            <li class="layui-nav-item"><a onclick="renamefunc()">重命名</a></li>
+            <li class="layui-nav-item"><a onclick="deletefunc()">删除</a></li>
+        </ul>
+
+
+        <!--右头部-->
+        <ul class="layui-nav layui-layout-right">
+            <!--搜索框、搜索按钮-->
+            <li class="layui-nav-item">
+                <input name="title" required lay-verify="required" placeholder="请输入文件名搜索"
+                       autocomplete="off" class="layui-input" id="search1"></li>
+            <li class="layui-nav-item">
+                <span class="layui-icon layui-icon-search reloadbtn"
+                      style="font-size: 20px; color: white;padding-left: 5px;" data-type="reload1"></span>
+            </li>
+        </ul>
+    </div>
+
+    <!--主要内容-->
+    <div>
+        <div>
+            <table id="file" lay-filter="file"></table>
+
+            <script>
+                layui.use('element', function () {
+                    var element = layui.element;
+                });
+
+                //动态表格
+                layui.use('table', function () {
+                    var table = layui.table;
+                    var uid = document.getElementById("uid1").innerText;
+                    var path = encodeURIComponent(document.getElementById("path2").innerText)
+
+                    table.render({
+                        elem: '#file'
+                        , url: '/all/findByPath' //数据接口
+                        , method: 'post'
+                        , where: {
+                            uid: uid,
+                            path: path
+                        }
+                        , height: 'full-20'
+                        , skin: 'nob' //无边框
+                        , size: 'lg'
+                        , cols: [
+                            [ //表头
+                                {type: 'checkbox', title: '全选',width:'5%', unresize: 'true'}
+                                , {
+                                field: 'name',
+                                title: '文件名',
+                                width: '40%',
+                                unresize: 'true',
+                                sort: true,
+                                templet: '#fileicon'
+                            }
+                                // , {toolbar: '#toolbar', width: '20%'}
+                                , {
+                                field: 'size',
+                                title: '大小',
+                                width: '20%',
+                                unresize: 'true',
+                                sort: true,
+                                templet: '#size'
+                            }
+                                , {
+                                field: 'modifyTime',
+                                title: '修改日期',
+                                width: '35%',
+                                unresize: 'true',
+                                sort: true,
+                                templet: '#timeformat'
+                            }
+                            ]
+                        ]
+                        , id: 'ftable'
+                    });
+
+
+                    //重载表格数据
+                    var $ = layui.$, active = {
+                        //搜索框
+                        reload1: function () {
+                            var name = document.getElementById("search1").value;
+                            console.log(name)
+                            console.log(uid)
+
+                            //执行重载
+                            table.reload('ftable', {
+                                url: '/search/searchByName'
+                                , where: {
+                                    uid: uid,
+                                    name: name
+                                }
+                            });
+                        },
+
+                        //返回上一级,todo
+                        reload2: function () {
+                            var syspath = document.getElementById("path1").innerText
+
+                            var path = document.getElementById("path2").innerText
+                            //不是根目录才可以
+                            if (syspath != path) {
+                                //console.log("back"+path)
+                                var strs = path.split('/')
+                                //console.log(strs)
+                                var curpath = ""
+                                for (var i = 0; i < strs.length - 2; i++) {
+                                    curpath += strs[i] + '/'
+                                }
+                                //更新当前路径
+                                document.getElementById("path2").innerText = curpath
+                                //console.log(curpath)
+                                //更新session记录的路径
+                                $.ajax({
+                                    type: "post",
+                                    url: "/user/chgPath",
+                                    data: {
+                                        path: curpath
+                                    },
+                                    success: function () {
+                                    },
+                                    error: function () {
+                                        alert("请求失败!");
+                                    }
+                                })
+                                //更新，获取最新的session
+                                window.location.reload()
+
+
+                                //执行重载
+                                table.reload('ftable', {
+                                    url: '/all/findByPath'
+                                    , where: {
+                                        uid: uid,
+                                        path: curpath
+                                    }
+                                });
+                            } else {
+                                layer.msg("当前为根目录",{time:500})
+                            }
+                        }
+                    };
+
+                    $('.reloadbtn').on('click', function () {
+                        var type = $(this).data('type');
+                        active[type] ? active[type].call(this) : '';
+                    });
+                });
+            </script>
+        </div>
+    </div>
+</div>
+
+<!--  新建文件夹表单  -->
+<form class="layui-form" id="newfolder1" style="display: none;">
+    <div class="layui-form-item" style="margin-top: 20px;margin-left:0px;">
+        <label class="layui-form-label" style="width: 90px;padding-right: 5px">文件夹名字：</label>
+        <div class="layui-input-block">
+            <input type="text" required lay-verify="required" value="新建文件夹" autocomplete="on"
+                   class="layui-input" id="ffname" style="width:150px">
+        </div>
+    </div>
+</form>
+
+<!--  文件重命名表单  -->
+<form class="layui-form" id="renameform" style="display: none;">
+    <div class="layui-form-item" style="margin-top: 20px;margin-left:0px;">
+        <label class="layui-form-label" style="width: 90px;padding-right: 5px">新名字：</label>
+        <div class="layui-input-block">
+            <input type="text" required lay-verify="required" autocomplete="on"
+                   class="layui-input" id="ffname1" style="width:150px">
+        </div>
+    </div>
+</form>
+
+
+<!--根据文件类型在前面&后面显示图标,"nf-icon"默认隐藏，新建文件夹-->
+<script type="text/html" id="fileicon">
+    <!--文件夹-->
+    {{# if(d.size==undefined) { }}
+    <i class="fa fa-folder fa-2x" style="color: yellow;position: relative;top: 10%;">&nbsp;</i>
+
+    <!--  文件  -->
+    {{# } else { }}
+    {{# if(d.type=="1") { }}
+    <i class="fa fa-file-image-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
+    {{# } else if(d.type=="2") { }}
+    <i class="fa fa-file-word-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
+    {{# } else if(d.type=="3") { }}
+    <i class="fa fa-file-video-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
+    {{# } else if(d.type=="4") { }}
+    <i class="fa fa-tumblr-square fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
+    {{# } else if(d.type=="5") { }}
+    <i class="fa fa-file-audio-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
+    {{# } else { }}
+    <i class="fa fa-file fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
+    {{# } }}
+    {{# } }}
+
+
+    <a id={{d.id}} style="color: grey;position: relative;top: 0%;" onmouseenter="mouseenter('{{d.id}}')"
+       onmouseleave="mouseleave('{{d.id}}')" onclick="clickfolder('{{d.name}}')">{{ d.name }}</a>
+</script>
+
+
+<!--文件大小为空时-->
+<script type="text/html" id="size">
+    {{# if(d.size==null){ }}
+    <p>{{ d.size='-' }}</p>
+    {{# }else{ }}
+    <p>{{ sizeformat(d.size) }}</p>
+    {{# } }}
+</script>
+
+
+<!--时间格式转换-->
+<script type="text/html" id="timeformat">
+    {{# d.modifyTime = timeformat(d.modifyTime) }}
+    <p>{{ d.modifyTime }}</p>
+</script>
+</body>
+
+<script type="text/javascript" th:src="@{/js/upload.js}"></script>
+<script type="text/javascript" th:src="@{/js/download.js}"></script>
+<script type="text/javascript" th:src="@{/js/timeformat.js}"></script>
+<script type="text/javascript" th:src="@{/js/share.js}"></script>
+<script type="text/javascript" th:src="@{/js/copyto.js}"></script>
+<script type="text/javascript" th:src="@{/js/moveto.js}"></script>
+<script type="text/javascript" th:src="@{/js/sizeformat.js}"></script>
+<script type="text/javascript" th:src="@{/js/delete.js}"></script>
+<script type="text/javascript" th:src="@{/js/rename.js}"></script>
+
+<script type="text/javascript">
+    //点击文件夹
+    function clickfolder(data) {
+        var uid = document.getElementById("uid1").innerText;
+        var path = document.getElementById("path2").innerText
+        var curpath = path + "" + data + "/"
+        //console.log(curpath)
+        document.getElementById("path2").innerText = curpath;
+        //console.log(document.getElementById("path2").innerText)
+
+        //更新session记录的路径
+        $.ajax({
+            type: "post",
+            url: "/user/chgPath",
+            data: {
+                path: curpath
+            },
+            success: function () {
+            },
+            error: function () {
+                alert("请求失败!");
+            }
+        })
+        //更新，获取最新的session
+        window.location.reload()
+
+
+        //重载数据
+        layui.use('table', function () {
+            var table = layui.table
+            table.reload('ftable', {
+                url: '/all/findByPath'
+                , where: {
+                    uid: uid,
+                    path: curpath
+                }
+            });
+
+        });
+    }
+
+    //新建文件夹
+    function newFolder() {
+        var uid = document.getElementById("uid1").innerText
+        var path = document.getElementById("path2").innerText
+
+        layer.open({
+            type: 1,
+            area: ['300px', '180px'],
+            title: '新建文件夹',
+            content: $("#newfolder1"),
+            shade: 0,
+            btnAlign: 'c',
+            scrollbar: false,
+            btn: ['提交', '取消']
+            , btn1: function (index, layero) {
+                var ffname = $("#ffname").val()
+                console.log(ffname)
+
+                $.ajax({
+                    url: '/folder/add',
+                    type: 'post',
+                    dataType: 'text',
+                    data: {
+                        name: ffname,
+                        path: path,
+                        uid: uid
+                    },
+                    success: function (msg) {
+                        //console.log(msg)
+                        if (msg == "1") {
+                            layer.msg("新建文件夹成功", {time: 1000})
+                            //console.log(111)
+                            layer.closeAll()
+                            window.location.reload();
+                        } else {
+                            layer.msg("失败，该文件夹已存在", {time: 1000})
+                            layer.closeAll()
+                            window.location.reload();
+                        }
+                    },
+                    error: function (msg) {
+                        layer.msg("请求失败", {time: 1000})
+                        layer.closeAll()
+                        window.location.reload();
+                    }
+                })
+            },
+            btn2: function (index, layero) {
+                layer.closeAll()
+                window.location.reload();
+            },
+            cancel: function (layero, index) {
+                layer.closeAll()
+                window.location.reload();
+            }
+        })
+    }
+
+    //文件名变色
+    function mouseenter(str) {
+        var name = document.getElementById(str);
+        name.style.color = '#17C4E2';
+    }
+    function mouseleave(str) {
+        var name = document.getElementById(str);
+        name.style.color = 'grey';
+    }
+</script>
+</html>

@@ -1,0 +1,18 @@
+server:
+  port: 8020
+spring:
+  datasource:
+    name: netdisk
+    url: jdbc:mysql://localhost:3306/netdisk?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=CTT
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+mybatis:
+  mapper-locations: classpath:/mapping/*.xml
+  type-aliases-package: cn.edu.scau.lxy.netdisk.entity
