@@ -38,7 +38,7 @@ public class AllController {
 
         java.net.URLDecoder urlDecoder=new java.net.URLDecoder();
         String path1=urlDecoder.decode(request.getParameter("path"),"utf-8");
-        //System.out.println(path1);
+
 
         List<Folder> list1=folderFeign.findByPath(uid,path1);
         List<File> list2=fileFeign.findByPath(uid,path1);

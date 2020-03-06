@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+
+    <cite th:text="${session.user.id}" id="uid" hidden></cite>
+    <cite th:text="${session.user.name}" id="uname" hidden></cite>
+    <cite th:text="${session.user.phone}" id="uphone" hidden></cite>
+    <cite th:text="${session.user.email}" id="uemail" hidden></cite>
+
+</head>
+<body>
+<div>
+    <form class="layui-form" id="myform" style="position: relative;margin-top: 2%;margin-right: 50%;" onsubmit="return false">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名：</label>
+            <div class="layui-input-block">
+                <input type="text" id="username"  class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号：</label>
+            <div class="layui-input-block">
+                <input type="text" id="cellphone" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱：</label>
+            <div class="layui-input-block">
+                <input type="text" id="email" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" onclick="back()">返回</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+
+<script type="text/javascript">
+    function back(){
+        //修改session.page
+        $.ajax({
+            type: "post",
+            url: "/user/chgPage",
+            data: {
+                page: "/all"
+            },
+            success: function () {
+            },
+            error: function () {
+                alert("请求失败!");
+            }
+        })
+        window.parent.location.reload();
+    }
+
+    $(function () {
+        document.getElementById("username").value = document.getElementById("uname").innerText
+        document.getElementById("cellphone").value = document.getElementById("uphone").innerText
+        document.getElementById("email").value = document.getElementById("uemail").innerText
+    })
+</script>
+</html>

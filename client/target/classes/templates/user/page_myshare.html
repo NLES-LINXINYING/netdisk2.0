@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>netdisk-共享网盘-lxy</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+
+    <!--引用部分代码，便于html和js分开-->
+    <script type="text/javascript" th:src="@{/js/upload.js}"></script>
+    <script type="text/javascript" th:src="@{/js/logout.js}"></script>
+    <script type="text/javascript" th:src="@{/js/capacity.js}"></script>
+    <script type="text/javascript" th:src="@{/js/download.js}"></script>
+    <script type="text/javascript" th:src="@{/js/timeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/share.js}"></script>
+    <script type="text/javascript" th:src="@{/js/copyto.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moveto.js}"></script>
+    <script type="text/javascript" th:src="@{/js/sizeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/delete.js}"></script>
+    <script type="text/javascript" th:src="@{/js/rename.js}"></script>
+    <script type="text/javascript" th:src="@{/js/folder_click.js}"></script>
+    <script type="text/javascript" th:src="@{/js/findName.js}"></script>
+</head>
+
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo" style="color: rgba(255, 255, 255, .7);">共享网盘</div>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="#2">
+                    <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
+                    <cite th:text="${session.name}" id="username1"></cite>
+                    <cite th:text="${session.id}" id="uid1" hidden></cite>
+                    <cite th:text="${session.usedMemory}" id="usedMemory1" hidden></cite>
+                    <cite th:text="${session.totalMemory}" id="totalMemory1" hidden></cite>
+                    <cite th:text="${session.syspath}" id="path1" hidden></cite>
+                    <cite th:text="${session.curpath}" id="path2" hidden></cite>
+                    <cite th:text="${session.page}" id="page1" hidden></cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/redirect/user/personalCenter">个人资料</a></dd>
+                    <dd><a href="/redirect/user/updatePassword2">修改二级密码</a></dd>
+                    <dd><a href="">帮助中心</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a onclick="logout()">退出</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <div style="float: top">
+                    <li class="layui-nav-item"><a href="/redirect/user/page_all"><i
+                            class="layui-icon layui-icon-file"
+                            style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;全部文件</a></li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_picture">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;图片</a>
+                    </li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_word">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;文档</a>
+                    </li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_video">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;视频</a>
+                    </li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_torrent">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;种子</a>
+                    </li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_music">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;音乐</a>
+                    </li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_other">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;其它</a>
+                    </li>
+                    <li class="layui-nav-item"><a  href="/redirect/user/page_privateSpace"><i
+                            class="layui-icon layui-icon-password"
+                            style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;私密空间</a>
+                    </li>
+                    <li class="layui-nav-item  layui-bg-green"><a href="/redirect/user/page_myshare">
+                        <i class="layui-icon layui-icon-share" style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;我的分享</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="/redirect/user/page_acceptShare">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;接收分享</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="/redirect/user/page_recyclebin"><i class="layui-icon layui-icon-delete" style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;回收站</a>
+                    </li>
+                </div>
+
+
+                <div style="position:relative;margin-top:10%;">
+                    <div style="padding-left: 20px;padding-right: 20px;">
+                        <div class="layui-progress layui-progress" lay-filter="percent">
+                            <div class="layui-progress-bar" lay-percent="0%"></div>
+                        </div>
+                        <li style="padding-top: 5px;">
+                            <a style="color:#fff;" id="text1"></a>
+                            <a  href="/redirect/user/page_expand" style="margin-left:25%;color:#009688;">扩容</a>
+                        </li>
+                    </div>
+                </div>
+
+
+
+            </ul>
+        </div>
+    </div>
+
+    <!--  内容主体  -->
+    <div class="layui-body" style="bottom: 0;overflow-y: hidden;">
+        <div class="layui-body" style="bottom: 0;overflow-y: hidden;border:none;">
+            <div>
+                <table id="file" lay-filter="file" style="border:none;"></table>
+            </div>
+        </div>
+
+
+        <script type="text/javascript">
+
+            //JavaScript代码区域
+            layui.use('element', function () {
+                var element = layui.element;
+            });
+
+            layui.use('table', function () {
+                var table = layui.table;
+
+                table.render({
+                    elem: '#file'
+                    , url: '/myshare/findAll'
+                    , where: {
+                        uid: 1
+                    }
+                    , height: 'full-43'
+                    , skin: 'nob' //无边框
+                    , even: true
+                    , size: 'lg'
+                    , toolbar: '#headtoolbar' //头部工具栏
+                    , defaultToolbar: []
+                    , cols: [
+                        [
+                            {type: 'checkbox', title: '全选', unresize: 'true'}
+                            , {field: 'fid', title: '分享文件', width: '30%', unresize: 'true', sort: true, templet: '#fileicon'}
+                            , {field: 'timesOfBrowse', title: '浏览次数', width: '10%', unresize: 'true', align: 'center',sort: true}
+                            , {field: 'timesOfSave', title: '保存次数', width: '10%', unresize: 'true', sort: true}
+                            , {field: 'timesOfDownload', title: '下载次数', width: '10%', unresize: 'true', sort: true}
+                            , {field: 'timeOfShare', title: '分享时间', width: '20%', unresize: 'true', sort: true, templet: '#timeformat1'}
+                            , {field: 'timeOfInvalid', title: '失效时间', width: '20%', unresize: 'true', sort: true, templet: '#timeformat2'}
+                        ]
+                    ]
+                    ,id:'ftable'
+                });
+            });
+        </script>
+
+        <!--头部工具栏-->
+        <script type="text/html" id="headtoolbar">
+            <div>
+                <button class="layui-btn layui-btn-sm" onclick="notshare()">取消分享</button>
+            </div>
+        </script>
+
+        <!--时间格式转换-->
+        <script type="text/html" id="timeformat1">
+            <p>{{ timeformat(d.timeOfShare) }}</p>
+        </script>
+
+        <script type="text/html" id="timeformat2">
+            <p>{{ timeformat(d.timeOfInvalid) }}</p>
+        </script>
+
+        <!--根据文件类型在前面&后面显示图标,"nf-icon"默认隐藏，新建文件夹-->
+        <script type="text/html" id="fileicon">
+            {{# console.log(d) }}
+            {{# if(d.ffid == 0 && d.fid == 0){ }}
+            <i class="fa fa-chain-broken fa-2x" style="color: orangered;position: relative;top: 10%;">&nbsp;</i>
+            <a style="color: grey;position: relative;top: 0%;">分享的文件已被删除</a>
+            {{# } else if( d.ffid != 0 ){ }}
+            <i class="fa fa-link fa-2x" style="color: #007DDB;position: relative;top: 10%;">&nbsp;</i>
+            <a style="color: grey;position: relative;top: 0%;">{{ findFFname(d.ffid) }}</a>
+            {{# } else { }}
+            <i class="fa fa-link fa-2x" style="color: #007DDB;position: relative;top: 10%;">&nbsp;</i>
+            <a style="color: grey;position: relative;top: 0%;">{{ findFname(d.fid) }}</a>
+            {{# } }}
+        </script>
+
+        <script type="text/javascript">
+            //取消分享
+            function notshare() {
+                var data = layui.table.checkStatus('ftable').data
+                var length = data.length
+
+                if(length==0){
+                    layer.msg("请选择文件",{time:1000})
+                }else{
+                    var mids=new Array();
+                    var mi=0;
+                    for(var i=0;i<length;i++){
+                        mids[mi++]=data[i].id
+                    }
+
+                    layer.msg("是否确认删除这些分享链接？",
+                        {
+                            btnAlign:'c',
+                            btn:["确认","取消"],
+                            btn1:function (index) {
+                                $.ajax({
+                                    url: '/myshare/delete',
+                                    type: 'post',
+                                    data: {
+                                        mids:mids.toString()
+                                    },
+                                    success: function () {
+                                        layer.msg("删除成功", {time: 1000})
+                                        layer.closeAll()
+                                        window.location.reload();
+                                    },
+                                    error: function () {
+                                        layer.msg("请求失败", {time: 1000})
+                                        layer.closeAll()
+                                    }
+                                })
+                                //layer.close(index)
+                            },
+                            btn2:function (index) {
+                                layer.close(index)
+                            }
+                        }
+                    )
+                }
+            }
+        </script>
+    </div>
+</div>
+</body>
+</html>

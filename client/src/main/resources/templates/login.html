@@ -93,7 +93,7 @@
                             <form>
                                 <input type="text" class="name active" placeholder="用户名" required="required" id="username2" autocomplete="off"/>
                                 <input type="password" class="password" placeholder="密码" required="required" id="password21" autocomplete="off"/>
-                                <input type="password" class="password" placeholder="确认密码" required="required" id="password22" autocomplete="off"/>
+                                <input type="password" class="password" placeholder="确认密码" required="required" id="password22" autocomplete="off" onkeydown="enter2()"/>
                             </form>
                             <div class="login-bottom">
                                 <ul>
@@ -130,6 +130,14 @@
         }
     }
 
+    //为注册添加回车监听事件
+    function enter2(frm,event) {
+        var event=window.event?window.event:event;
+        if(event.keyCode==13){
+            register()
+        }
+    }
+
     //注册
     function register() {
         var name = document.getElementById("username2").value
@@ -149,7 +157,7 @@
         } else {
             $.ajax({
                 type: 'post',
-                url: '/user/register',
+                url: '/netdisk/register',
                 data: {name: name, password: password},
                 dataType: 'text',
                 success: function (mydata) {
@@ -180,15 +188,13 @@
     function login() {
         var name = document.getElementById("username1").value
         var password = document.getElementById("password1").value
-        console.log(name)
-        console.log(password)
 
         if(name==""||password==""){
             layer.msg("以上字段不能为空",{time:500})
         }else{
             $.ajax({
                 type: 'post',
-                url: '/user/login',
+                url: '/netdisk/login',
                 data: {name: name, password: password},
                 dataType: 'text',
                 success: function (mydata) {
@@ -196,7 +202,13 @@
                         layer.msg("登录成功",{time:500})
                         //跳转到系统界面
                         setTimeout(function () {
-                            window.location.href = "/homepage";
+                            window.location.href = "/redirect/user/page_all";
+                        },500)
+                    } else if(mydata == "2"){
+                        layer.msg("登录成功",{time:500})
+                        //跳转到系统界面
+                        setTimeout(function () {
+                            window.location.href = "/redirect/admin/user_manage";
                         },500)
                     } else {
                         layer.msg("用户名或密码不正确，请重新输入", {time: 500})

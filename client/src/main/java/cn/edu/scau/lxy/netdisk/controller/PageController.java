@@ -1,6 +1,8 @@
 package cn.edu.scau.lxy.netdisk.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /*
@@ -9,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class PageController {
 
-    //注册登录页面
+    /*//注册登录页面
     @RequestMapping("/login")
     public String login(){
         return "login";
@@ -133,5 +135,25 @@ public class PageController {
     @RequestMapping("/emailBinding")
     public String emailBinding(){
         return "emailBinding";
+    }*/
+
+
+
+    //注册登录页面
+    @RequestMapping("/login")
+    public String login(){
+        return "login";
+    }
+
+    //管理员所有页面重定向
+    @RequestMapping("/redirect/admin/{location}")
+    public String redirect(@PathVariable("location") String pageName){
+        return "/admin/"+pageName;
+    }
+
+    //普通用户所有页面重定向user
+    @RequestMapping("/redirect/user/{location}")
+    public String redirect2(@PathVariable("location") String pageName){
+        return "/user/"+pageName;
     }
 }

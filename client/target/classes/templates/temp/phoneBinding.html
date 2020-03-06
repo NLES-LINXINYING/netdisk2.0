@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>个人中心</title>
+    <cite id="id" th:text="${session.id}" hidden></cite>
+    <cite id="name" th:text="${session.name}" hidden></cite>
+    <cite id="picture0" th:text="${session.picture}" hidden></cite>
+    <cite id="password1" th:text="${session.password1}" hidden></cite>
+
+    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" media="all">
+    <script th:src="@{/static/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/jquery.min.js}"></script>
+</head>
+
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo" style="color: white"><!--<img th:src="@{/images/baidu.jpg}"  class="logo"></img>-->
+            个人中心
+        </div>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item"><a href="/personalCenter">返回首页</a></li>
+            <li class="layui-nav-item">
+                <a href="#2">
+                    <img th:src="@{/static/images/picture.jpg}" class="layui-nav-img">
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a onclick="logout()">退出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+
+
+    <!-- 内容主体区域 -->
+    <div class="layui-body">
+        <div class="layui-layout-body">
+            <div class="layui-layout layui-layout-admin">
+                <!--左侧-->
+                <div class="layui-side layui-bg-black">
+                    <div class="layui-side-scroll">
+                        <!-- 左侧导航区域（可配合layui已有的垂直导航） &ndash;&gt;-->
+                        <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                            <div style="float: top">
+                                <div align="center" style="padding-top:15%;padding-bottom:10%;">
+                                    <img th:src="@{/static/images/picture.jpg}" class="layui-circle"
+                                         style="display: block;padding-bottom: 5%;" width="30%" height="30%">
+                                    <p th:text="${session.name}"
+                                       style="display: block;font-size: large;font-weight: bolder;padding-bottom:5%;"></p>
+                                </div>
+
+                                <li class="layui-nav-item"><a href="/updatePassword1"><p style="float: left;color: white">登录密码</p>
+                                    <p style="float:right;font-size: 10px">已设置 ></p></a></li>
+                                <li class="layui-nav-item"><a href="/phoneBinding"><p style="float: left;color: white">绑定手机</p>
+                                    <p style="float:right;font-size: 10px" id="phone1"></p></a></li>
+                                <li class="layui-nav-item"><a href="/emailBinding"><p style="float: left;color: white">绑定邮箱</p>
+                                    <p style="float:right;font-size: 10px" id="email1">已设置 ></p></a></li>
+
+                                <li class="layui-nav-item"><a href=""><p style="float: left;color: white">账号申诉</p>
+                                    <p style="float:right;font-size: 10px">已设置 ></p></a></li>
+                                <li class="layui-nav-item"><a href=""><p style="float: left;color: white">账号注销</p>
+                                    <p style="float:right;font-size: 10px">已设置 ></p></a></li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <div class="layui-body" style="bottom: 0px;background-color: #F2F2F2;overflow-y: hidden;">
+                    <div style="margin-left: 2%;margin-right: 2%;margin-top: 2%;">
+
+                        <div class="layui-col-md12">
+                            <div class="layui-card" style="border-radius: 10px;">
+                                <div class="layui-card-body" id="phoneyes" >
+                                    <div style="margin-top:3%;margin-bottom: 50%;margin-left: 3%;">
+                                        <p>已绑定手机</p>
+                                        <p id="phone2" style="font-size: 30px;padding-top: 15px;"></p>
+                                        <p style="padding-top: 15px;color: #B2B2B2">绑定手机号将作为您身份验证的重要方式，请谨慎操作！</p>
+
+                                        <div class="layui-row" style="padding-top: 30px;">
+                                            <button class="layui-btn layui-btn-normal" onclick="updatePhone()">更换手机号
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-card-body" id="phoneno">
+                                    <div style="margin-top:3%;margin-bottom: 50%;margin-left: 3%;">
+                                        <p>未绑定手机</p>
+                                        <p style="padding-top: 15px;color: #B2B2B2">绑定手机号将作为您身份验证的重要方式，请谨慎操作！</p>
+
+                                        <div class="layui-row" style="padding-top: 30px;">
+                                            <button class="layui-btn layui-btn-normal" onclick="updatePhone()">去绑定</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!--绑定手机页面-->
+<form class="layui-form" id="bind-phone-page" style="display: none;padding-left: 10%;padding-right: 10%;padding-top: 2%;" onsubmit="return false">
+    <div class="layui-form-item" style="margin-top: 20px;margin-left:0px;">
+        <label style="display:block;">请输入您要绑定的手机号码：</label>
+    </div>
+
+    <div class="layui-row">
+        <input type="text" placeholder="请输入手机号码" required autocomplete="on" id="myphone" style="height: 34px;width: 307px;">
+    </div>
+
+    <!--<div class="layui-row" style="margin-top:20px;">
+        <input type="text" placeholder="手机验证码" autocomplete="off" id="code" style="width:210px;height: 34px;">
+        <button type="button" class="layui-btn layui-btn-primary" style="margin-left: 30px;">发送验证码</button>
+    </div>-->
+
+    <div class="layui-row" style="margin-top:20px;">
+        <button class="layui-btn layui-btn-normal" style="width: 311px;" onclick="phoneBind()">确认</button>
+    </div>
+
+    <script>
+        //手机绑定&&更改手机号
+        function phoneBind() {
+            var uid=document.getElementById("id").innerText
+            var phone=document.getElementById("myphone").value
+
+            $.ajax({
+                type: "get",
+                url: "/user/updatePhone",
+                data: {
+                    uid:uid,
+                    phone:phone
+                },
+                dataType: "text",
+                success: function (msg) {
+                    if (msg == "1") {
+                        layer.msg("绑定成功",{time:1500})
+                        /*document.getElementById("phone1").innerText = msg.replace(reg, '$1******$2') + " >"
+                        document.getElementById("phone2").innerText = msg.replace(reg, '$1******$2')*/
+                        setTimeout(function () {
+                            window.parent.location.reload();
+                        },1500)
+                    } else {
+                        layer.msg("绑定失败")
+                    }
+                },
+                error: function () {
+                    layer.msg("请求失败")
+                }
+            })
+        }
+    </script>
+</form>
+
+<script>
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    //修改登陆密码
+    layui.use('form', function () {
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            //layer.msg(JSON.stringify(data))
+            //用户名
+            var username = document.getElementById("name").innerText
+            //原密码
+            var pw1 = document.getElementById("password1").innerText
+
+            console.log(username)
+            console.log(pw1)
+
+            var pw11 = document.getElementsByName("opw")[0].value
+            var pw21 = document.getElementsByName("npw1")[0].value
+            var pw22 = document.getElementsByName("npw2")[0].value
+
+            //判断两次密码是否一致
+            if (pw21 != pw22) {
+                document.getElementById("pw2lb").innerText = "两次密码不一致，请重新输入"
+            } else {
+                //判断原密码是否正确
+                if (pw1 != pw11) {
+                    document.getElementById("pw0lb").innerText = "原密码不正确，请重新输入"
+                } else {
+                    //修改数据库的pw1
+                    $.ajax({
+                        type: "get",
+                        url: "/user/updatePassword1",
+                        data: {name: username, password: pw21},
+                        dataType: "text",
+                        success: function (msg) {
+                            console.log(msg)
+                            if (msg == pw21) {
+                                // alert("登出成功!");
+                                layer.msg("修改成功")
+                            } else {
+                                layer.msg("修改失败!");
+                            }
+                        },
+                        error: function () {
+                            layer.msg("请求失败!");
+                        }
+                    })
+                }
+            }
+
+
+            return false;
+        });
+    });
+
+    //动态更新页面信息
+    window.onload = function () {
+        var score = 1
+
+        var name=document.getElementById("name").innerText
+        var picture = document.getElementById("picture0").innerText
+
+        //用户手机号是否为空
+        $.ajax({
+            type: "get",
+            url: "/user/getPhone",
+            async:false,
+            data: {
+                name:name
+            },
+            dataType: "text",
+            success: function (msg) {
+                if (msg != "") {
+                    //console.log(msg)
+                    var reg = /^(\d{3})\d{6}(\d{2})$/
+                    document.getElementById("phone1").innerText = msg.replace(reg, '$1******$2') + " >"
+                    document.getElementById("phone2").innerText = msg.replace(reg, '$1******$2')
+                    document.getElementById("phoneno").style.display='none'
+                    score += 1
+                } else {
+                    document.getElementById("phone1").innerText = "去绑定 >"
+                    document.getElementById("phoneyes").style.display='none'
+                }
+            },
+            error: function () {
+                layer.msg("请求失败")
+            }
+        })
+
+
+        //用户邮箱号是否为空
+        $.ajax({
+            type: "get",
+            url: "/user/getEmail",
+            async:false,
+            data: {
+                name:name
+            },
+            dataType: "text",
+            success: function (msg) {
+                if (msg != "") {
+                    //console.log(msg)
+                    document.getElementById("email1").innerText = msg.substring(0, 3) + "***" + msg.substr(msg.indexOf("@")) + ">"
+                    score += 1
+                } else {
+                    document.getElementById("email1").innerText = "去绑定 >"
+                }
+            },
+            error: function () {
+                layer.msg("请求失败")
+            }
+        })
+
+        //用户图像是否为空
+        if (picture != "") {
+            score += 1
+        } else {
+
+        }
+
+        //填充分数
+        document.getElementById("score1").innerText = (score / 4) * 100
+
+        //用户信息完整度评分
+        layui.use(['rate'], function () {
+            var rate = layui.rate;
+
+            //只读
+            rate.render({
+                elem: '#test1'
+                , length: 5 //自定义长度
+                , half: true
+                , value: score / 4 * 5
+                , readonly: true
+                , theme: '#fbff2e' //自定义主题色
+            });
+        });
+    }
+
+    //更换手机号
+    function updatePhone() {
+       layer.open({
+            type: 1,
+            title: '绑定手机',
+            area: ['390px', '230px'],
+            content: $('#bind-phone-page')
+        })
+    }
+
+    //退出登录
+    function logout() {
+        $.ajax({
+            type: "post",
+            url: "/user/logout",
+            data: {},
+            dataType: "text",
+            success: function (msg) {
+                if (msg == "1") {
+                    // alert("登出成功!");
+                    window.location.href = "/login";
+                } else {
+                    alert("登出失败!");
+                }
+            },
+            error: function () {
+                alert("请求失败!");
+            }
+        })
+    }
+</script>
+</body>
+</html>

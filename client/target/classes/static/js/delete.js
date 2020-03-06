@@ -1,7 +1,7 @@
 //删除
 function deletefunc() {
     var uid=document.getElementById("uid1").innerText
-    var uname=document.getElementById("uname1").innerText
+    var uname=document.getElementById("username1").innerText
     var data = layui.table.checkStatus('ftable').data
     var length = data.length
 

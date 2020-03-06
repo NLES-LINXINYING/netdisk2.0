@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>管理员--参数管理</title>
+
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+</head>
+
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header layui-bg-black">
+        <div class="layui-logo" style="color: rgba(255, 255, 255, .7);">共享网盘</div>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="#2">
+                    <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
+                    <cite th:text="${session.name}" id="username1"></cite>
+                    <cite th:text="${session.id}" id="uid1" hidden></cite>
+                </a>
+            </li>
+            <li class="layui-nav-item"><a onclick="logout()">退出</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <div style="float: top">
+                    <li class="layui-nav-item"><a id="user_manage"
+                                                  href="/redirect/admin/user_manage">&nbsp;&nbsp;用户管理</a>
+                    </li>
+                    <li class="layui-nav-item"><a id="data_dictionary" href="/redirect/admin/data_dictionary">&nbsp;&nbsp;数据字典</a>
+                    </li>
+                    <li class="layui-nav-item  layui-bg-green"><a id="parameter_manage"
+                                                                  href="/redirect/admin/parameter_manage">&nbsp;&nbsp;参数设置</a>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="layui-body" style="bottom: 0;">
+        <div>
+            <table id="param" lay-filter="param"></table>
+
+            <!--  操作列 -->
+            <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-xs" lay-event="add">增加</a>
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            </script>
+
+            <!--  编辑页面  -->
+            <form class="layui-form" id="edit-page" style="display: none;padding-left: 10%;padding-right: 10%;padding-top: 2%;" onsubmit="return false">
+                <cite id="id" hidden></cite>
+                <div class="layui-form-item" style="margin-top: 20px;">
+                    <label class="layui-form-label">参数名字：</label>
+                    <div class="layui-input-block">
+                        <input class="layui-input" type="text" placeholder="请输入参数名字" required autocomplete="on" id="name" th:value="111">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-top: 20px;">
+                    <label class="layui-form-label">参数真值：</label>
+                    <div class="layui-input-block">
+                        <input class="layui-input" type="text" placeholder="请输入参数真值" required autocomplete="on" id="value">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-top: 20px;">
+                    <label class="layui-form-label">参数描述：</label>
+                    <div class="layui-input-block">
+                        <input class="layui-input" type="text" placeholder="请输入参数描述" required autocomplete="on" id="description">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item" style="margin-top:20px;margin-left: 90px;">
+                    <button class="layui-btn" onclick="confirm()">确认</button>
+                    <button class="layui-btn layui-btn-primary" onclick="back()">取消</button>
+                </div>
+
+                <script>
+
+                    //编辑
+                    function confirm() {
+                        var id=document.getElementById("id").value
+                        var name=document.getElementById("name").value
+                        var description=document.getElementById("description").value
+                        var value=document.getElementById("value").value
+
+                        //增加或修改
+                        if(id==''){
+                            $.ajax({
+                                type: "get",
+                                url: "/admin/add_param",
+                                data: {
+                                    name:name,
+                                    value:value,
+                                    description:description
+                                },
+                                dataType: "text",
+                                success: function (msg) {
+                                    if (msg == "1") {
+                                        layer.msg("增加成功")
+                                        setTimeout(function () {
+                                            window.parent.location.reload();
+                                        },1500)
+                                    } else {
+                                        layer.msg("增加失败")
+                                    }
+                                },
+                                error: function () {
+                                    layer.msg("请求失败")
+                                }
+                            })
+                        }else{
+                            $.ajax({
+                                type: "get",
+                                url: "/admin/update_param",
+                                data: {
+                                    id:id,
+                                    name:name,
+                                    value:value,
+                                    description:description
+                                },
+                                dataType: "text",
+                                success: function (msg) {
+                                    if (msg == "1") {
+                                        layer.msg("修改成功")
+                                        setTimeout(function () {
+                                            window.parent.location.reload();
+                                        },1500)
+                                    } else {
+                                        layer.msg("修改失败")
+                                    }
+                                },
+                                error: function () {
+                                    layer.msg("请求失败")
+                                }
+                            })
+                        }
+
+                    }
+
+                    function back() {
+                        layer.closeAll()
+                    }
+                </script>
+            </form>
+
+            <script>
+                layui.use('element', function () {
+                    var element = layui.element;
+                });
+
+                //动态表格
+                layui.use('table', function () {
+                    var table = layui.table
+
+                    table.render({
+                        elem: '#param'
+                        , url: '/admin/findAll_param' //数据接口
+                        , height: 'full-60'
+                        , skin: 'line' //边框样式
+                        , even: true  //隔行背景
+                        , loading: true //加载条
+                        , size: 'lg'  //表格尺寸
+                        , page: {
+                            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                            , limit: 10
+                            , limits: [10, 20, 30]
+                        }
+                        , cols: [
+                            [
+                                {
+                                    field: 'name',
+                                    title: '参数名',
+                                    width: '25%',
+                                    unresize: 'true',
+                                    sort: true,
+                                    align: 'center'
+                                }
+                                , {
+                                field: 'value',
+                                title: '参数值',
+                                width: '25%',
+                                unresize: 'true',
+                                align: 'center'
+                            }
+                                , {
+                                field: 'description',
+                                title: '参数描述',
+                                width: '25%',
+                                unresize: 'true',
+                                align: 'center'
+                            }
+                                , {
+                                fixed: 'right',
+                                title: '操作',
+                                width: '25%',
+                                unresize: 'true',
+                                align: 'center',
+                                toolbar: '#barDemo'
+                            }
+                            ]
+                        ]
+                    });
+
+                    //监听行工具事件
+                    table.on('tool(param)', function(obj){
+                        var data = obj.data;
+                        if(obj.event === 'del'){
+                            layer.confirm('是否确认删除该条数据', function(index){
+                                $.ajax({
+                                    url: '/admin/deleteByID_param',
+                                    type: 'get',
+                                    async: true,
+                                    data: {
+                                        id:data.id
+                                    },
+                                    success: function () {
+                                        layer.msg("删除成功")
+                                        setTimeout(function () {
+                                            window.location.reload();
+                                        },500)
+
+                                    },
+                                    error: function () {
+                                        layer.msg("请求失败", {time: 500})
+                                    }
+                                })
+                            });
+                        } else if(obj.event === 'edit'){
+                            var data=obj.data;
+
+                            layer.open({
+                                type: 1,
+                                title: '编辑参数',
+                                area: ['400px', '320px'],
+                                content: $('#edit-page'),
+                                shade: false,
+                                success: function(layero, index){
+                                    document.getElementById("id").value=data.id
+                                    document.getElementById("name").value=data.name
+                                    document.getElementById("value").value=data.value
+                                    document.getElementById("description").value=data.description
+                                }
+                            })
+                        } else if(obj.event === 'add'){
+                            layer.open({
+                                type: 1,
+                                title: '增加参数',
+                                area: ['400px', '320px'],
+                                content: $('#edit-page'),
+                                shade: false,
+                                success: function(layero, index){
+                                    document.getElementById("id").value=''
+                                    document.getElementById("name").value=''
+                                    document.getElementById("value").value=''
+                                    document.getElementById("description").value=''
+                                }
+                            })
+                        }
+                    });
+                });
+            </script>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<!--功能函数-->
+<script>
+    //退出登录
+    function logout() {
+        $.ajax({
+            type: "post",
+            url: "/user/logout",
+            data: {},
+            dataType: "text",
+            success: function (msg) {
+                if (msg == "1") {
+                    window.location.href = "/login";
+                } else {
+                    alert("登出失败!");
+                }
+            },
+            error: function () {
+                alert("请求失败!");
+            }
+        })
+    }
+</script>
+</html>

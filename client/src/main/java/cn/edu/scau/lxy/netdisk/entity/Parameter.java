@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Parameter {
+    private long id;
     private String name;
     private String value;
-    private String detail;
+    private String description;
 }

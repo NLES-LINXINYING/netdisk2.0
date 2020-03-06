@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>netdisk-共享网盘-lxy</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+
+    <!--引用部分代码，便于html和js分开-->
+    <script type="text/javascript" th:src="@{/js/upload.js}"></script>
+    <script type="text/javascript" th:src="@{/js/logout.js}"></script>
+    <script type="text/javascript" th:src="@{/js/capacity.js}"></script>
+    <script type="text/javascript" th:src="@{/js/download.js}"></script>
+    <script type="text/javascript" th:src="@{/js/timeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/share.js}"></script>
+    <script type="text/javascript" th:src="@{/js/copyto.js}"></script>
+    <script type="text/javascript" th:src="@{/js/moveto.js}"></script>
+    <script type="text/javascript" th:src="@{/js/sizeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/delete.js}"></script>
+    <script type="text/javascript" th:src="@{/js/rename.js}"></script>
+    <script type="text/javascript" th:src="@{/js/folder_click.js}"></script>
+</head>
+
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo" style="color: rgba(255, 255, 255, .7);">共享网盘</div>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="#2">
+                    <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
+                    <cite th:text="${session.name}" id="username1"></cite>
+                    <cite th:text="${session.id}" id="uid1" hidden></cite>
+                    <cite th:text="${session.usedMemory}" id="usedMemory1" hidden></cite>
+                    <cite th:text="${session.totalMemory}" id="totalMemory1" hidden></cite>
+                    <cite th:text="${session.syspath}" id="path1" hidden></cite>
+                    <cite th:text="${session.curpath}" id="path2" hidden></cite>
+                    <cite th:text="${session.page}" id="page1" hidden></cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/redirect/user/personalCenter">个人资料</a></dd>
+                    <dd><a href="/redirect/user/updatePassword2">修改二级密码</a></dd>
+                    <dd><a href="">帮助中心</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a onclick="logout()">退出</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <div style="float: top">
+                    <li class="layui-nav-item"><a href="/redirect/user/page_all"><i
+                            class="layui-icon layui-icon-file"
+                            style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;全部文件</a></li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_picture">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;图片</a>
+                    </li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_word">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;文档</a>
+                    </li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_video">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;视频</a>
+                    </li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_torrent">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;种子</a>
+                    </li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_music">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;音乐</a>
+                    </li>
+                    <li class="layui-nav-item layui-bg-green"><a href="/redirect/user/page_other">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;其它</a>
+                    </li>
+                    <li class="layui-nav-item"><a  href="/redirect/user/page_privateSpace"><i
+                            class="layui-icon layui-icon-password"
+                            style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;私密空间</a>
+                    </li>
+                    <li class="layui-nav-item"><a href="/redirect/user/page_myshare">
+                        <i class="layui-icon layui-icon-share" style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;我的分享</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="/redirect/user/page_acceptShare">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;接收分享</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="/redirect/user/page_recyclebin"><i class="layui-icon layui-icon-delete" style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;回收站</a>
+                    </li>
+                </div>
+
+
+                <div style="position:relative;margin-top:10%;">
+                    <div style="padding-left: 20px;padding-right: 20px;">
+                        <div class="layui-progress layui-progress" lay-filter="percent">
+                            <div class="layui-progress-bar" lay-percent="0%"></div>
+                        </div>
+                        <li style="padding-top: 5px;">
+                            <a style="color:#fff;" id="text1"></a>
+                            <a  href="/redirect/user/page_expand" style="margin-left:25%;color:#009688;">扩容</a>
+                        </li>
+                    </div>
+                </div>
+
+
+
+            </ul>
+        </div>
+    </div>
+
+    <!--  内容主体  -->
+    <div class="layui-body" style="bottom: 0;overflow-y: hidden;">
+        <div class="layui-body" style="bottom: 0;overflow-y: hidden;border:none;">
+            <div>
+                <table id="file" lay-filter="file" style="border:none;"></table>
+            </div>
+        </div>
+
+
+
+        <script>
+            layui.use('element', function () {
+                var element = layui.element;
+            });
+
+            layui.use('table', function () {
+                var table = layui.table;
+                var uid=document.getElementById("uid1").innerText
+
+                table.render({
+                    elem: '#file'
+                    , url: '/other/findAll'
+                    , where: {
+                        uid: uid
+                    }
+                    , height: 'full-43'
+                    , skin: 'nob' //无边框
+                    , even: true
+                    , size: 'lg'
+                    , toolbar: '#headtoolbar' //头部工具栏
+                    , defaultToolbar: []
+                    , cols: [
+                        [ //表头
+                            {type: 'checkbox', title: '全选', unresize: 'true'}
+                            , {field: 'name', title: '文件名', width: '40%', unresize: 'true', sort: true, templet: '#fileicon'}
+                            , {field: 'size', title: '大小', width: '20%', unresize: 'true', sort: true,templet: '#size'}
+                            , {
+                            field: 'modifyTime',
+                            title: '修改日期',
+                            width: '40%',
+                            unresize: 'true',
+                            sort: true,
+                            templet: '#timeformat'
+                        }
+                        ]
+                    ]
+                    , id: 'ftable'
+                });
+
+                //重载表格数据
+                var $ = layui.$, active = {
+                    //搜索框
+                    reload1: function () {
+                        var name = document.getElementById("search1").value;
+                        console.log(name)
+                        console.log(uid)
+
+                        //执行重载
+                        table.reload('ftable', {
+                            url: '/other/findByNameAndType'
+                            , where: {
+                                uid: uid,
+                                name: name
+                            }
+                        });
+                    }
+                };
+
+                $('.reloadbtn').on('click', function () {
+                    var type = $(this).data('type');
+                    active[type] ? active[type].call(this) : '';
+                });
+            });
+        </script>
+
+        <!--文件大小为空时-->
+        <script type="text/html" id="size">
+            <p>{{ sizeformat(d.size) }}</p>
+        </script>
+
+        <!--  文件重命名表单  -->
+        <form class="layui-form" id="renameform" style="display: none;">
+            <div class="layui-form-item" style="margin-top: 20px;margin-left:0px;">
+                <label class="layui-form-label" style="width: 90px;padding-right: 5px">新名字：</label>
+                <div class="layui-input-block">
+                    <input type="text" required lay-verify="required" autocomplete="on"
+                           class="layui-input" id="ffname1" style="width:150px">
+                </div>
+            </div>
+        </form>
+
+        <!--头部工具栏-->
+        <script type="text/html" id="headtoolbar">
+            <div>
+                <div style="float: left;">
+                    <button class="layui-btn layui-btn-sm" onclick="back()">返回</button>
+                    <button class="layui-btn layui-btn-sm" onclick="sharefunc()">分享</button>
+                    <button class="layui-btn layui-btn-sm" onclick="downloaddemo()">下载</button>
+                    <button class="layui-btn layui-btn-sm" onclick="deletefunc()">删除</button>
+                    <button class="layui-btn layui-btn-sm" onclick="renamefunc()">重命名</button>
+                </div>
+
+                <!--搜索框、搜索按钮-->
+                <div style="float: right;">
+                    <li style="float: left;position: relative;bottom: 5px;">
+                        <input type="text" required lay-verify="required" placeholder="根据文件名搜索你的文件" autocomplete="off"
+                               class="layui-input" id="search1">
+                    </li>
+                    <li style="float: left;">
+                        <span class="layui-icon layui-icon-search reloadbtn" style="font-size: 20px;" data-type="reload1"></span>
+                    </li>
+                </div>
+            </div>
+        </script>
+
+        <!--时间格式转换-->
+        <script type="text/html" id="timeformat">
+            <p>{{ timeformat(d.modifyTime) }}</p>
+        </script>
+
+        <!--根据文件类型在前面&后面显示图标,"nf-icon"默认隐藏，新建文件夹-->
+        <script type="text/html" id="fileicon">
+            <i class="fa fa-file fa-2x" style="color: #007DDB;position: relative;top: 10%;">&nbsp;</i>
+            <a id={{d.id}} style="color: grey;position: relative;top: 0%;" onmouseenter="mouseenter('{{d.id}}')"
+               onmouseleave="mouseleave('{{d.id}}')">{{ d.name }}</a>
+        </script>
+
+        <script type="text/javascript">
+            function back() {
+                window.location.reload()
+            }
+        </script>
+    </div>
+</div>
+</body>
+</html>

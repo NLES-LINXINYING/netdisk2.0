@@ -18,7 +18,7 @@
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo"><!--<img th:src="@{/images/baidu.jpg}"  class="logo"></img>-->共享网盘</div>
+        <div class="layui-logo" style="color: rgba(255, 255, 255, .7);">共享网盘</div>
 
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
@@ -33,8 +33,8 @@
                     <cite th:text="${session.page}" id="page1" hidden></cite>
                 </a>
                 <dl class="layui-nav-child">
-                    <dd><a href="/personalCenter">个人资料</a></dd>
-                    <dd><a href="/updatePassword2">修改二级密码</a></dd>
+                    <dd><a href="/redirect/user/personalCenter">个人资料</a></dd>
+                    <dd><a href="/redirect/user/updatePassword2">修改二级密码</a></dd>
                     <dd><a href="">帮助中心</a></dd>
                 </dl>
             </li>
@@ -47,7 +47,7 @@
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree" lay-filter="test">
                 <div style="float: top">
-                    <li class="layui-nav-item"><a name="page" id="all" onclick="allfiles(0)"><i
+                    <li class="layui-nav-item layui-bg-green"><a name="page" id="all" onclick="allfiles(0)"><i
                             class="layui-icon layui-icon-file"
                             style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;全部文件</a></li>
                     <li class="layui-nav-item"><a name="page" id="picture" onclick="picture(1)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;图片</a>
@@ -98,10 +98,10 @@
 
 
     <div class="layui-body" style="bottom: 0;overflow-y: hidden;">
-        <!-- 内容主体区域 -->
+        <!--&lt;!&ndash; 内容主体区域 &ndash;&gt;
         <div>
             <iframe src="" id="iframe" width="100%" height="100%" style="border: none;overflow: hidden;"></iframe>
-        </div>
+        </div>-->
     </div>
 </div>
 </body>
@@ -117,8 +117,8 @@
 
     //默认首页
     $(function () {
-        $("#iframe").attr("src", page)
-        chgcl() //改变导航栏颜色
+        //$("#iframe").attr("src", "/redirect/user"+page)
+        // chgcl() //改变导航栏颜色
     })
 
     //全部页面
@@ -363,12 +363,11 @@
     function logout() {
         $.ajax({
             type: "post",
-            url: "/user/logout",
+            url: "/netdisk/logout",
             data: {},
             dataType: "text",
             success: function (msg) {
                 if (msg == "1") {
-                    // alert("登出成功!");
                     window.location.href = "/login";
                 } else {
                     alert("登出失败!");
@@ -392,9 +391,6 @@
             },
             dataType: 'text',
             success: function (msg) {
-                //document.getElementById("usedMemory1").innerText = msg
-                //console.log("test-"+msg)
-
                 var total = document.getElementById("totalMemory1").innerText;
                 var percent = msg / total
                 percent = percent * 100
@@ -404,6 +400,7 @@
                     element.progress('percent', percent + '%')
                 });
 
+                //由字节换算成G，保留两位小数
                 msg = msg / 1073741824
                 total = total / 1073741824
 
@@ -416,7 +413,7 @@
         })
     }
 
-    //改变左边导航栏颜色
+   /* //改变左边导航栏颜色
     function chgcl() {
         var page = document.getElementById("page1").innerText
         var pageName = "" + page
@@ -436,7 +433,7 @@
 
 
         document.getElementById(pageName).style.color = "#009688"
-    }
+    }*/
     
     //iframe高度自适应
     function changeHeight() {

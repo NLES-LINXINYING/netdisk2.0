@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>管理员--用户管理</title>
+
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+</head>
+
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header layui-bg-black">
+        <div class="layui-logo" style="color: rgba(255, 255, 255, .7);">共享网盘</div>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="#2">
+                    <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
+                    <cite th:text="${session.name}" id="username1"></cite>
+                    <cite th:text="${session.id}" id="uid1" hidden></cite>
+                </a>
+            </li>
+            <li class="layui-nav-item"><a onclick="logout()">退出</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <div style="float: top">
+                    <li class="layui-nav-item layui-bg-green"><a id="user_manage" href="/redirect/admin/user_manage">&nbsp;&nbsp;用户管理</a>
+                    </li>
+                    <li class="layui-nav-item"><a id="data_dictionary" href="/redirect/admin/data_dictionary">&nbsp;&nbsp;数据字典</a>
+                    </li>
+                    <li class="layui-nav-item"><a id="parameter_manage" href="/redirect/admin/parameter_manage">&nbsp;&nbsp;参数设置</a>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="layui-body" style="bottom: 0;">
+        <!-- 内容主体区域 -->
+        <div>
+            <div>
+                <table id="file" lay-filter="file"></table>
+
+                <script>
+                    layui.use('element', function () {
+                        var element = layui.element;
+                    });
+
+                    //动态表格
+                    layui.use('table', function () {
+                        var table = layui.table
+
+                        table.render({
+                            elem: '#file'
+                            , url: '/admin/findAll_user' //数据接口
+                            , height: 'full-60'
+                            , skin: 'line' //边框样式
+                            , even: true  //隔行背景
+                            , loading: true //加载条
+                            , size: 'lg'  //表格尺寸
+                            , page: {
+                                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                                , limit: 10
+                                , limits: [10,20,30]
+                            }
+                            , cols: [
+                                [
+                                    {
+                                        field: 'name',
+                                        title: '用户名',
+                                        width: '20%',
+                                        unresize: 'true',
+                                        sort: true,
+                                        align: 'center'
+                                    }
+                                    , {
+                                    field: 'phone',
+                                    title: '手机号',
+                                    width: '20%',
+                                    unresize: 'true',
+                                    align: 'center'
+                                }
+                                    , {
+                                    field: 'email',
+                                    title: '邮箱号',
+                                    width: '20%',
+                                    unresize: 'true',
+                                    align: 'center'
+                                }
+                                    , {
+                                    field: 'totalMemory',
+                                    title: '总容量',
+                                    width: '20%',
+                                    unresize: 'true',
+                                    sort: true,
+                                    align: 'center'
+                                }
+                                    , {
+                                    field: 'usedMemory',
+                                    title: '当前已用容量',
+                                    width: '20%',
+                                    unresize: 'true',
+                                    sort: true,
+                                    align: 'center'
+                                }
+                                ]
+                            ]
+                            , id: 'ftable'
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<!--功能函数-->
+<script>
+    //退出登录
+    function logout() {
+        $.ajax({
+            type: "post",
+            url: "/user/logout",
+            data: {},
+            dataType: "text",
+            success: function (msg) {
+                if (msg == "1") {
+                    window.location.href = "/login";
+                } else {
+                    alert("登出失败!");
+                }
+            },
+            error: function () {
+                alert("请求失败!");
+            }
+        })
+    }
+</script>
+</html>

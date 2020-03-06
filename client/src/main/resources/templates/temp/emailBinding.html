@@ -76,26 +76,26 @@
 
                         <div class="layui-col-md12">
                             <div class="layui-card" style="border-radius: 10px;">
-                                <div class="layui-card-body" id="phoneyes" >
+                                <div class="layui-card-body" id="emailyes">
                                     <div style="margin-top:3%;margin-bottom: 50%;margin-left: 3%;">
-                                        <p>已绑定手机</p>
-                                        <p id="phone2" style="font-size: 30px;padding-top: 15px;"></p>
-                                        <p style="padding-top: 15px;color: #B2B2B2">绑定手机号将作为您身份验证的重要方式，请谨慎操作！</p>
+                                        <p>已绑定邮箱</p>
+                                        <p id="email2" style="font-size: 30px;padding-top: 15px;"></p>
+                                        <p style="padding-top: 15px;color: #B2B2B2">绑定邮箱将作为您身份验证的重要方式，请谨慎操作！</p>
 
                                         <div class="layui-row" style="padding-top: 30px;">
-                                            <button class="layui-btn layui-btn-normal" onclick="updatePhone()">更换手机号
+                                            <button class="layui-btn layui-btn-normal" onclick="updateEmail()">更换邮箱号
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="layui-card-body" id="phoneno">
+                                <div class="layui-card-body" id="emailno">
                                     <div style="margin-top:3%;margin-bottom: 50%;margin-left: 3%;">
-                                        <p>未绑定手机</p>
-                                        <p style="padding-top: 15px;color: #B2B2B2">绑定手机号将作为您身份验证的重要方式，请谨慎操作！</p>
+                                        <p>未绑定邮箱</p>
+                                        <p style="padding-top: 15px;color: #B2B2B2">绑定邮箱将作为您身份验证的重要方式，请谨慎操作！</p>
 
                                         <div class="layui-row" style="padding-top: 30px;">
-                                            <button class="layui-btn layui-btn-normal" onclick="updatePhone()">去绑定</button>
+                                            <button class="layui-btn layui-btn-normal" onclick="updateEmail()">去绑定</button>
                                         </div>
                                     </div>
                                 </div>
@@ -112,14 +112,14 @@
 </div>
 </div>
 
-<!--绑定手机页面-->
-<form class="layui-form" id="bind-phone-page" style="display: none;padding-left: 10%;padding-right: 10%;padding-top: 2%;" onsubmit="return false">
+<!--绑定邮箱页面-->
+<form class="layui-form" id="bind-email-page" style="display: none;padding-left: 10%;padding-right: 10%;padding-top: 2%;" onsubmit="return false">
     <div class="layui-form-item" style="margin-top: 20px;margin-left:0px;">
-        <label style="display:block;">请输入您要绑定的手机号码：</label>
+        <label style="display:block;">请输入您要绑定的邮箱号码：</label>
     </div>
 
     <div class="layui-row">
-        <input type="text" placeholder="请输入手机号码" required autocomplete="on" id="myphone" style="height: 34px;width: 307px;">
+        <input type="text" placeholder="请输入邮箱号码" required autocomplete="on" id="myemail" style="height: 34px;width: 307px;">
     </div>
 
     <!--<div class="layui-row" style="margin-top:20px;">
@@ -128,28 +128,26 @@
     </div>-->
 
     <div class="layui-row" style="margin-top:20px;">
-        <button class="layui-btn layui-btn-normal" style="width: 311px;" onclick="phoneBind()">确认</button>
+        <button class="layui-btn layui-btn-normal" style="width: 311px;" onclick="emailBind()">确认</button>
     </div>
 
     <script>
-        //手机绑定&&更改手机号
-        function phoneBind() {
+        //邮箱绑定&&更改邮箱号
+        function emailBind() {
             var uid=document.getElementById("id").innerText
-            var phone=document.getElementById("myphone").value
+            var email=document.getElementById("myemail").value
 
             $.ajax({
                 type: "get",
-                url: "/user/updatePhone",
+                url: "/user/updateEmail",
                 data: {
                     uid:uid,
-                    phone:phone
+                    email:email
                 },
                 dataType: "text",
                 success: function (msg) {
                     if (msg == "1") {
                         layer.msg("绑定成功",{time:1500})
-                        /*document.getElementById("phone1").innerText = msg.replace(reg, '$1******$2') + " >"
-                        document.getElementById("phone2").innerText = msg.replace(reg, '$1******$2')*/
                         setTimeout(function () {
                             window.parent.location.reload();
                         },1500)
@@ -164,6 +162,7 @@
         }
     </script>
 </form>
+
 
 <script>
     layui.use('element', function () {
@@ -245,19 +244,15 @@
                     //console.log(msg)
                     var reg = /^(\d{3})\d{6}(\d{2})$/
                     document.getElementById("phone1").innerText = msg.replace(reg, '$1******$2') + " >"
-                    document.getElementById("phone2").innerText = msg.replace(reg, '$1******$2')
-                    document.getElementById("phoneno").style.display='none'
                     score += 1
                 } else {
                     document.getElementById("phone1").innerText = "去绑定 >"
-                    document.getElementById("phoneyes").style.display='none'
                 }
             },
             error: function () {
                 layer.msg("请求失败")
             }
         })
-
 
         //用户邮箱号是否为空
         $.ajax({
@@ -272,9 +267,12 @@
                 if (msg != "") {
                     //console.log(msg)
                     document.getElementById("email1").innerText = msg.substring(0, 3) + "***" + msg.substr(msg.indexOf("@")) + ">"
+                    document.getElementById("email2").innerText = msg.substring(0, 3) + "***" + msg.substr(msg.indexOf("@"))
+                    document.getElementById("emailno").style.display='none'
                     score += 1
                 } else {
                     document.getElementById("email1").innerText = "去绑定 >"
+                    document.getElementById("emailyes").style.display='none'
                 }
             },
             error: function () {
@@ -308,13 +306,13 @@
         });
     }
 
-    //更换手机号
-    function updatePhone() {
-       layer.open({
+    //更换邮箱号
+    function updateEmail() {
+        layer.open({
             type: 1,
-            title: '绑定手机',
+            title: '绑定邮箱',
             area: ['390px', '230px'],
-            content: $('#bind-phone-page')
+            content: $('#bind-email-page')
         })
     }
 

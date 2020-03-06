@@ -3,7 +3,7 @@ package cn.edu.scau.lxy.netdisk.controller;
 import cn.edu.scau.lxy.netdisk.entity.User;
 import cn.edu.scau.lxy.netdisk.entityVO.UserVO;
 import cn.edu.scau.lxy.netdisk.feign.FileFeign;
-import cn.edu.scau.lxy.netdisk.feign.ParamFeign;
+import cn.edu.scau.lxy.netdisk.feign.ParameterFeign;
 import cn.edu.scau.lxy.netdisk.feign.UserFeign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,12 +19,12 @@ public class UserController {
     @Autowired
     private UserFeign userFeign;
     @Autowired
-    private ParamFeign paramFeign;
+    private ParameterFeign paramFeign;
     @Autowired
     private FileFeign fileFeign;
 
 
-    @PostMapping("/register")
+   /* @PostMapping("/register")
     @ResponseBody
     public int add(HttpServletRequest request){
         String name=request.getParameter("name");
@@ -52,7 +52,7 @@ public class UserController {
         }
 
         return 0;
-    }
+    }*/
 
     @GetMapping("/deleteByName/{name}")
     @ResponseBody
@@ -66,11 +66,12 @@ public class UserController {
         return userFeign.findByName(name);
     }
 
-    @GetMapping("/findAll")
+    /*@GetMapping("/findAll")
     @ResponseBody
     public UserVO findAll(@RequestParam("page") int page, @RequestParam("limit") int limit){
-        return new UserVO(0,"",100,userFeign.findAll((page-1)*limit,limit));
-    }
+        int count=userFeign.count();
+        return new UserVO(0,"",count,userFeign.findAll((page-1)*limit,limit));
+    }*/
 
     @GetMapping("/updatePassword1")
     @ResponseBody
@@ -86,14 +87,14 @@ public class UserController {
         return userFeign.findByName(name).toString();
     }
 
-    @GetMapping("/count")
+    /*@GetMapping("/count")
     @ResponseBody
     public String count(){
         int result=userFeign.count();
         return "当前用户数量为："+result;
-    }
+    }*/
 
-    @PostMapping("/login")
+    /*@PostMapping("/login")
     @ResponseBody
     public int login(HttpServletRequest request, HttpSession session){
         String name=request.getParameter("name");
@@ -136,7 +137,7 @@ public class UserController {
             return 1;
         }
         return 0;
-    }
+    }*/
 
     @PostMapping("/chgPath")
     @ResponseBody
