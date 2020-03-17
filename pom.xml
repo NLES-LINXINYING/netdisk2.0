@@ -8,13 +8,17 @@
     <artifactId>netdisk</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
     <modules>
-        <module>eurekaserver</module>
-        <module>configserver</module>
-        <module>admin</module>
-        <module>file</module>
-        <module>client</module>
-        <module>user</module>
+        <module>netdisk_01_config</module>
+        <module>netdisk_02_eureka</module>
+        <module>netdisk_03_gateway</module>
+        <module>netdisk_04_admin</module>
+        <module>netdisk_05_user</module>
+        <module>netdisk_06_file</module>
+        <module>netdisk_07_client</module>
+        <module>netdisk_08_common</module>
+        <module>base</module>
     </modules>
 
     <parent>
@@ -24,12 +28,6 @@
     </parent>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.1.6.RELEASE</version>
-        </dependency>
-
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>

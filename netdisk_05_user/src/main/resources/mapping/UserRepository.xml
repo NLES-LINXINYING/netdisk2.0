@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.ORG//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dta/mybatis-3-mapper.dtd">
+<mapper namespace="UserRepository">
+
+    <insert id="add" parameterType="User">
+        insert into user(name,password) values(#{name},#{password})
+    </insert>
+
+    <delete id="deleteByName" parameterType="String">
+        delete from user where name = #{name}
+    </delete>
+
+    <select id="findByName" parameterType="String" resultType="User">
+        select * from user where name = #{name}
+    </select>
+
+    <select id="findByNameAndPassword" parameterType="String" resultType="User">
+        select * from user where name = #{name} and password = #{password}
+    </select>
+
+    <select id="findAll" resultType="User">
+        select * from user limit #{param1},#{param2}
+    </select>
+
+    <update id="updatePassword1" parameterType="User">
+        update user set password = #{password} where name = #{name}
+    </update>
+
+    <update id="updatePassword2" parameterType="User">
+        update user set password2 = #{password2} where name = #{name}
+    </update>
+
+    <update id="updateUsedMemory">
+        update user set usedMemory = #{usedM} where id = #{id}
+    </update>
+
+    <update id="updatePhone">
+        update user set phone = #{phone} where id = #{id}
+    </update>
+
+    <update id="updateEmail">
+        update user set email = #{email} where id = #{id}
+    </update>
+
+    <select id="count" resultType="int">
+        select count(id) from user
+    </select>
+
+</mapper>

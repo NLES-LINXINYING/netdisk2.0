@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>登录注册</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords"
+          content="Tab Widget Form template Responsive, Login form web template,Flat Pricing tables,Flat Drop downs  Sign up Web Templates, Flat Web Templates, Login sign up Responsive web template, SmartPhone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design"/>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css" media="all"/>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+    <style>
+        .btn {
+            font-size: 0.9em;
+            color: #fff;
+            background: #8e44ad;
+            border: 3px solid #8e44ad;
+            outline: none;
+            cursor: pointer;
+            padding: 7px 20px;
+            -webkit-appearance: none;
+
+        }
+
+        .btn:hover {
+            background: #fff;
+            color: #8e44ad;
+            border-color: #8e44ad;
+            transition: 0.5s all ease;
+            -webkit-transition: 0.5s all ease;
+            -moz-transition: 0.5s all ease;
+            -o-transition: 0.5s all ease;
+            -ms-transition: 0.5s all ease;
+        }
+    </style>
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/easyResponsiveTabs.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#horizontalTab').easyResponsiveTabs({
+                type: 'default',
+                width: 'auto',
+                fit: true
+            });
+        });
+    </script>
+</head>
+
+<body>
+<!-- main -->
+<div class="main">
+    <h1>共享网盘</h1>
+    <div class="main-info">
+        <div class="sap_tabs">
+            <div id="horizontalTab" style="display: block; width: 100%; margin: 0px;">
+                <ul class="resp-tabs-list">
+                    <li class="resp-tab-item" aria-controls="tab_item-0" role="tab"><h2><span>登录</span></h2></li>
+                    <li class="resp-tab-item" aria-controls="tab_item-1" role="tab"><span>注册</span></li>
+                    <div class="clear"></div>
+                </ul>
+                <div class="resp-tabs-container">
+                    <!--登录-->
+                    <div class="tab-1 resp-tab-content" aria-labelledby="tab_item-0">
+                        <div class="login-top">
+                            <form>
+                                <input type="text" class="name" required="required" placeholder="用户名" id="username1"/>
+                                <input type="password" class="password" required="required" placeholder="密码" id="password1" onkeydown="enter()"/>
+                            </form>
+                            <div class="login-bottom">
+                                <ul>
+                                    <li>
+                                        <a href="#2">忘记密码?</a>
+                                    </li>
+                                    <li>
+                                        <form onsubmit="return false">
+                                            <input type="button" value="登录" onclick="login()" class="btn"/>
+                                        </form>
+                                    </li>
+                                </ul>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!--注册-->
+                    <div class="tab-1 resp-tab-content" aria-labelledby="tab_item-1">
+                        <div class="login-top sign-top">
+                            <form>
+                                <input type="text" class="name active" placeholder="用户名" required="required" id="username2" autocomplete="off"/>
+                                <input type="password" class="password" placeholder="密码" required="required" id="password21" autocomplete="off"/>
+                                <input type="password" class="password" placeholder="确认密码" required="required" id="password22" autocomplete="off" onkeydown="enter2()"/>
+                            </form>
+                            <div class="login-bottom">
+                                <ul>
+                                    <li>
+<!--                                        <a href="#"></a>-->
+                                    </li>
+                                    <li>
+                                        <form onsubmit="return false">
+                                            <input type="button" value="注册" onclick="register()" class="btn"/>
+                                        </form>
+                                    </li>
+                                </ul>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    layui.use('layer', function () {
+        var $ = layui.jquery, layer = layui.layer;
+    });
+
+    //为登录添加回车监听事件
+    function enter(frm,event) {
+        var event=window.event?window.event:event;
+        if(event.keyCode==13){
+            login()
+        }
+    }
+
+    //为注册添加回车监听事件
+    function enter2(frm,event) {
+        var event=window.event?window.event:event;
+        if(event.keyCode==13){
+            register()
+        }
+    }
+
+    //注册
+    function register() {
+        var name = document.getElementById("username2").value
+        var password = document.getElementById("password21").value
+        var password2 = document.getElementById("password22").value
+
+        if(name==""||password==""||password2==""){
+            layer.msg("以上字段不能为空",{time:500})
+            document.getElementById("username2").value=""
+            document.getElementById("password21").value=""
+            document.getElementById("password22").value=""
+        } else if (password != password2) {
+            layer.msg("两次密码不一致，请重新输入", {time: 500})
+            //清空密码
+            document.getElementById("password21").value=""
+            document.getElementById("password22").value=""
+        } else {
+            $.ajax({
+                type: 'post',
+                url: '/netdisk/register',
+                data: {name: name, password: password},
+                dataType: 'text',
+                success: function (mydata) {
+                    if (mydata == "1") {
+                        layer.msg("注册成功", {time: 500})
+                        //返回登录页面
+                        setTimeout(function () {
+                            window.location.reload();
+                        },500)
+
+                    } else {
+                        layer.msg("该用户已存在", {time: 500})
+                        //刷新当前页面
+                        document.getElementById("username2").value=""
+                        document.getElementById("password21").value=""
+                        document.getElementById("password22").value=""
+                    }
+                },
+                error: function () {
+                    layer.msg("请求失败", {time: 1000})
+                }
+            })
+        }
+    }
+
+
+    //登录
+    function login() {
+        var name = document.getElementById("username1").value
+        var password = document.getElementById("password1").value
+
+        if(name==""||password==""){
+            layer.msg("以上字段不能为空",{time:500})
+        }else{
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:8763/user/user/login',
+                // xhrFields: {withCredentials: false},
+                data: {name: name, password: password},
+                dataType: 'JSON',
+                crossDomain: true,
+                success: function (mydata) {
+                    console.log(mydata["message"])
+                    /*if (mydata == "1") {
+                        layer.msg("登录成功",{time:500})
+                        //跳转到系统界面
+                        setTimeout(function () {
+                            window.location.href = "/redirect/user/page_all";
+                        },500)
+                    } else if(mydata == "2"){
+                        layer.msg("登录成功",{time:500})
+                        //跳转到系统界面
+                        setTimeout(function () {
+                            window.location.href = "/redirect/admin/user_manage";
+                        },500)
+                    } else {
+                        layer.msg("用户名或密码不正确，请重新输入", {time: 500})
+                        //刷新当前页面
+                        setTimeout(function () {
+                            window.location.reload()
+                        },500)
+                    }*/
+                },
+                error: function () {
+                    layer.msg("请求失败", {time: 1000})
+                }
+            })
+        }
+    }
+</script>
+</body>
+</html>

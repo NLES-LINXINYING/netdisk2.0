@@ -7,24 +7,37 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="user" />
-        <module name="file" />
-        <module name="configserver" />
-        <module name="eurekaserver" />
-        <module name="client" />
-        <module name="admin" />
+        <module name="netdisk_08_common" />
+        <module name="netdisk_07_client" />
+        <module name="netdisk_06_file" />
+        <module name="netdisk_04_admin" />
+        <module name="netdisk_01_config" />
+        <module name="netdisk_05_user" />
+        <module name="base" />
+        <module name="netdisk_02_eureka" />
+        <module name="netdisk-logging" />
+        <module name="netdisk_03_gateway" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="netdisk-gateway" target="1.8" />
+      <module name="netdisk-logging" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="admin" options="-parameters" />
-      <module name="client" options="-parameters" />
-      <module name="configserver" options="-parameters" />
-      <module name="eurekaserver" options="-parameters" />
-      <module name="file" options="-parameters" />
+      <module name="base" options="-parameters" />
       <module name="netdisk" options="-parameters" />
-      <module name="user" options="-parameters" />
+      <module name="netdisk-gateway" options="-parameters" />
+      <module name="netdisk-logging" options="-parameters" />
+      <module name="netdisk_01_config" options="-parameters" />
+      <module name="netdisk_02_eureka" options="-parameters" />
+      <module name="netdisk_03_gateway" options="-parameters" />
+      <module name="netdisk_04_admin" options="-parameters" />
+      <module name="netdisk_05_user" options="-parameters" />
+      <module name="netdisk_06_file" options="-parameters" />
+      <module name="netdisk_07_client" options="-parameters" />
+      <module name="netdisk_08_common" options="-parameters" />
     </option>
   </component>
 </project>

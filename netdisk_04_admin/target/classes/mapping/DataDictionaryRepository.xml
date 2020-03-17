@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//MYBATIS.ORG//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dta/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.scau.lxy.netdisk.admin.repository.DataDictionaryRepository">
+
+    <insert id="add" parameterType="DataDictionary">
+        insert into data_dictionary(dict_type,dict_description,code,code_value) values(#{dict_type},#{dict_description},#{code},#{code_value})
+    </insert>
+
+    <delete id="deleteByID" parameterType="long">
+        delete from data_dictionary where id = #{id}
+    </delete>
+
+    <select id="findByID" parameterType="long" resultType="DataDictionary">
+        select * from data_dictionary where id = #{id}
+    </select>
+
+    <select id="findAll" resultType="DataDictionary">
+        select * from data_dictionary limit #{param1},#{param2}
+    </select>
+
+    <update id="update">
+        update data_dictionary set dict_type = #{type}, dict_description = #{description}, code = #{code}, code_value = #{value} where id = #{id}
+    </update>
+
+    <select id="count" resultType="int">
+        select count(id) from data_dictionary
+    </select>
+
+</mapper>

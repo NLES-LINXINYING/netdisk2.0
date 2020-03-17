@@ -1,0 +1,23 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "cn.edu.scau.lxy.netdisk.util.JwtUtil",
+      "name": "jwt.config",
+      "type": "cn.edu.scau.lxy.netdisk.util.JwtUtil"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "cn.edu.scau.lxy.netdisk.util.JwtUtil",
+      "name": "jwt.config.key",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "cn.edu.scau.lxy.netdisk.util.JwtUtil",
+      "defaultValue": 0,
+      "name": "jwt.config.ttl",
+      "type": "java.lang.Long"
+    }
+  ]
+}
