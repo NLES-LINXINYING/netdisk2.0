@@ -9,6 +9,15 @@
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
     <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
     <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/logout.js}"></script>
+    <script type="text/javascript" th:src="@{/js/token/getTokenFromCookie.js}"></script>
+    <script type="text/javascript" th:src="@{/js/admin/getUserName.js}"></script>
+
+    <style>
+        .layui-table-view{
+            margin-top: 0;
+        }
+    </style>
 </head>
 
 
@@ -21,8 +30,7 @@
             <li class="layui-nav-item">
                 <a href="#2">
                     <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
-                    <cite th:text="${session.name}" id="username1"></cite>
-                    <cite th:text="${session.id}" id="uid1" hidden></cite>
+                    <cite id="username"></cite>
                 </a>
             </li>
             <li class="layui-nav-item"><a onclick="logout()">退出</a></li>
@@ -46,11 +54,11 @@
     </div>
 
 
-    <div class="layui-body" style="bottom: 0;">
+    <div class="layui-body" style="bottom: 0;overflow-y: hidden;">
         <!-- 内容主体区域 -->
         <div>
             <div>
-                <table id="file" lay-filter="file"></table>
+                <table id="user" lay-filter="user"></table>
 
                 <script>
                     layui.use('element', function () {
@@ -60,10 +68,13 @@
                     //动态表格
                     layui.use('table', function () {
                         var table = layui.table
+                        var token = "Bearer "+getCookie("my_token")
 
                         table.render({
-                            elem: '#file'
-                            , url: '/admin/findAll_user' //数据接口
+                            elem: '#user'
+                            , url: 'http://localhost:8763/admin/user/findAll' //数据接口
+                            , method: 'get'
+                            , headers: {Authorization: token}
                             , height: 'full-60'
                             , skin: 'line' //边框样式
                             , even: true  //隔行背景
@@ -126,25 +137,22 @@
 </div>
 </body>
 
-
-<!--功能函数-->
-<script>
-    //退出登录
-    function logout() {
+<script type="text/javascript">
+    //根据token向后台请求用户名字
+    window.onload=function () {
+        var token="Bearer "+getCookie("my_token")
         $.ajax({
-            type: "post",
-            url: "/user/logout",
+            url: 'http://localhost:8763/user/user/getUserName',
+            type: 'get',
+            headers: {Authorization: token},
             data: {},
-            dataType: "text",
-            success: function (msg) {
-                if (msg == "1") {
-                    window.location.href = "/login";
-                } else {
-                    alert("登出失败!");
-                }
+            dataType: 'JSON',
+            crossDomain: true,
+            success: function (result) {
+                document.getElementById("username").innerText=result['data']
             },
             error: function () {
-                alert("请求失败!");
+                layer.msg("请求失败", {time: 1000})
             }
         })
     }

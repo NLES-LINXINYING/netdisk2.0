@@ -1,9 +1,11 @@
 package cn.edu.scau.lxy.netdisk.file.repository;
 
 import cn.edu.scau.lxy.netdisk.file.entity.Recyclebin;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface RecyclebinRepository {
     public int addFile(Recyclebin recyclebin);
     public int addFolder(Recyclebin recyclebin);

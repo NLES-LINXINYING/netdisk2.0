@@ -1,3 +1,4 @@
+/*
 package cn.edu.scau.lxy.netdisk.base.controller;
 
 import cn.edu.scau.lxy.netdisk.base.pojo.Role;
@@ -43,3 +44,4 @@ public class BaseController {
         return new SingleResult(true, StatusCode.OK,"修改成功",null);
     }
 }
+*/

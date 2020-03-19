@@ -15,4 +15,4 @@ eureka:
     prefer-ip-address: true
 mybatis:
   mapper-locations: classpath:/mapping/*.xml
-  type-aliases-package: cn.edu.scau.lxy.netdisk.entity
+  type-aliases-package: cn.edu.scau.lxy.netdisk.file.entity

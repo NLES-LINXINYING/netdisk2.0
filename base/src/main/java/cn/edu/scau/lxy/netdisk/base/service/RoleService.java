@@ -1,3 +1,4 @@
+/*
 package cn.edu.scau.lxy.netdisk.base.service;
 
 import cn.edu.scau.lxy.netdisk.base.dao.RoleDao;
@@ -50,3 +51,4 @@ public class RoleService {
         roleDao.deleteById(id);
     }
 }
+*/

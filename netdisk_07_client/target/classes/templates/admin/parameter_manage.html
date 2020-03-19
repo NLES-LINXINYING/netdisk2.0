@@ -9,6 +9,15 @@
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
     <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
     <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/logout.js}"></script>
+    <script type="text/javascript" th:src="@{/js/token/getTokenFromCookie.js}"></script>
+    <script type="text/javascript" th:src="@{/js/admin/getUserName.js}"></script>
+
+    <style>
+        .layui-table-view{
+            margin-top: 0;
+        }
+    </style>
 </head>
 
 
@@ -21,8 +30,7 @@
             <li class="layui-nav-item">
                 <a href="#2">
                     <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
-                    <cite th:text="${session.name}" id="username1"></cite>
-                    <cite th:text="${session.id}" id="uid1" hidden></cite>
+                    <cite id="username"></cite>
                 </a>
             </li>
             <li class="layui-nav-item"><a onclick="logout()">退出</a></li>
@@ -48,7 +56,7 @@
     </div>
 
 
-    <div class="layui-body" style="bottom: 0;">
+    <div class="layui-body" style="bottom: 0;overflow-y: hidden;">
         <div>
             <table id="param" lay-filter="param"></table>
 
@@ -96,19 +104,27 @@
                         var description=document.getElementById("description").value
                         var value=document.getElementById("value").value
 
+                        var token = "Bearer "+getCookie("my_token")
+
+
                         //增加或修改
                         if(id==''){
                             $.ajax({
-                                type: "get",
-                                url: "/admin/add_param",
-                                data: {
+                                url: "http://localhost:8763/admin/parameter/add",
+                                type: "post",
+                                headers:
+                                    {
+                                        Authorization: token,
+                                        "Content-Type": "application/json"
+                                    },
+                                data: JSON.stringify({
                                     name:name,
                                     value:value,
                                     description:description
-                                },
-                                dataType: "text",
+                                }),
+                                dataType: "json",
                                 success: function (msg) {
-                                    if (msg == "1") {
+                                    if (msg['code'] == 0) {
                                         layer.msg("增加成功")
                                         setTimeout(function () {
                                             window.parent.location.reload();
@@ -123,17 +139,22 @@
                             })
                         }else{
                             $.ajax({
-                                type: "get",
-                                url: "/admin/update_param",
-                                data: {
+                                url: "http://localhost:8763/admin/parameter/update",
+                                type: "put",
+                                headers:
+                                    {
+                                        Authorization: token,
+                                        "Content-Type": "application/json"
+                                    },
+                                data: JSON.stringify({
                                     id:id,
                                     name:name,
                                     value:value,
                                     description:description
-                                },
-                                dataType: "text",
+                                }),
+                                dataType: "json",
                                 success: function (msg) {
-                                    if (msg == "1") {
+                                    if (msg['code'] == 0) {
                                         layer.msg("修改成功")
                                         setTimeout(function () {
                                             window.parent.location.reload();
@@ -164,10 +185,13 @@
                 //动态表格
                 layui.use('table', function () {
                     var table = layui.table
+                    var token = "Bearer "+getCookie("my_token")
 
                     table.render({
                         elem: '#param'
-                        , url: '/admin/findAll_param' //数据接口
+                        , url: 'http://localhost:8763/admin/parameter/findAll' //数据接口
+                        , method: 'get'
+                        , headers: {Authorization: token}
                         , height: 'full-60'
                         , skin: 'line' //边框样式
                         , even: true  //隔行背景
@@ -220,12 +244,10 @@
                         if(obj.event === 'del'){
                             layer.confirm('是否确认删除该条数据', function(index){
                                 $.ajax({
-                                    url: '/admin/deleteByID_param',
-                                    type: 'get',
+                                    url: 'http://localhost:8763/admin/parameter/deleteByID/'+data.id,
+                                    type: 'delete',
+                                    headers: {Authorization: token},
                                     async: true,
-                                    data: {
-                                        id:data.id
-                                    },
                                     success: function () {
                                         layer.msg("删除成功")
                                         setTimeout(function () {
@@ -278,26 +300,4 @@
 </body>
 
 
-<!--功能函数-->
-<script>
-    //退出登录
-    function logout() {
-        $.ajax({
-            type: "post",
-            url: "/user/logout",
-            data: {},
-            dataType: "text",
-            success: function (msg) {
-                if (msg == "1") {
-                    window.location.href = "/login";
-                } else {
-                    alert("登出失败!");
-                }
-            },
-            error: function () {
-                alert("请求失败!");
-            }
-        })
-    }
-</script>
 </html>

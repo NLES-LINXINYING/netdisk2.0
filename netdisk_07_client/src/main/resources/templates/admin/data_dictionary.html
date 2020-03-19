@@ -9,6 +9,15 @@
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
     <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
     <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/logout.js}"></script>
+    <script type="text/javascript" th:src="@{/js/token/getTokenFromCookie.js}"></script>
+    <script type="text/javascript" th:src="@{/js/admin/getUserName.js}"></script>
+
+    <style>
+        .layui-table-view {
+            margin-top: 0;
+        }
+    </style>
 </head>
 
 
@@ -21,8 +30,7 @@
             <li class="layui-nav-item">
                 <a href="#2">
                     <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
-                    <cite th:text="${session.name}" id="username1"></cite>
-                    <cite th:text="${session.id}" id="uid1" hidden></cite>
+                    <cite id="username"></cite>
                 </a>
             </li>
             <li class="layui-nav-item"><a onclick="logout()">退出</a></li>
@@ -34,9 +42,11 @@
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree" lay-filter="test">
                 <div style="float: top">
-                    <li class="layui-nav-item"><a id="user_manage" href="/redirect/admin/user_manage">&nbsp;&nbsp;用户管理</a>
+                    <li class="layui-nav-item"><a id="user_manage"
+                                                  href="/redirect/admin/user_manage">&nbsp;&nbsp;用户管理</a>
                     </li>
-                    <li class="layui-nav-item  layui-bg-green"><a id="data_dictionary" href="/redirect/admin/data_dictionary">&nbsp;&nbsp;数据字典</a>
+                    <li class="layui-nav-item  layui-bg-green"><a id="data_dictionary"
+                                                                  href="/redirect/admin/data_dictionary">&nbsp;&nbsp;数据字典</a>
                     </li>
                     <li class="layui-nav-item"><a id="parameter_manage" href="/redirect/admin/parameter_manage">&nbsp;&nbsp;参数设置</a>
                     </li>
@@ -46,7 +56,7 @@
     </div>
 
 
-    <div class="layui-body" style="bottom: 0;">
+    <div class="layui-body" style="overflow-y: hidden;bottom: 0;">
         <!-- 内容主体区域 -->
         <div>
             <div>
@@ -60,30 +70,36 @@
                 </script>
 
                 <!--  数据字典编辑页面  -->
-                <form class="layui-form" id="edit-page" style="display: none;padding-left: 10%;padding-right: 10%;padding-top: 2%;" onsubmit="return false">
+                <form class="layui-form" id="edit-page"
+                      style="display: none;padding-left: 10%;padding-right: 10%;padding-top: 2%;"
+                      onsubmit="return false">
                     <cite id="id" hidden></cite>
                     <div class="layui-form-item" style="margin-top: 20px;">
                         <label class="layui-form-label">字典类型：</label>
                         <div class="layui-input-block">
-                            <input class="layui-input" type="text" placeholder="请输入字典类型" required autocomplete="on" id="type" th:value="111">
+                            <input class="layui-input" type="text" placeholder="请输入字典类型" required autocomplete="on"
+                                   id="type" th:value="111">
                         </div>
                     </div>
                     <div class="layui-form-item" style="margin-top: 20px;">
                         <label class="layui-form-label">字典描述：</label>
                         <div class="layui-input-block">
-                            <input class="layui-input" type="text" placeholder="请输入字典描述" required autocomplete="on" id="description">
+                            <input class="layui-input" type="text" placeholder="请输入字典描述" required autocomplete="on"
+                                   id="description">
                         </div>
                     </div>
                     <div class="layui-form-item" style="margin-top: 20px;">
                         <label class="layui-form-label">字典编码：</label>
                         <div class="layui-input-block">
-                            <input class="layui-input" type="text" placeholder="请输入字典编码" required autocomplete="on" id="code">
+                            <input class="layui-input" type="text" placeholder="请输入字典编码" required autocomplete="on"
+                                   id="code">
                         </div>
                     </div>
                     <div class="layui-form-item" style="margin-top: 20px;">
                         <label class="layui-form-label">字典真值：</label>
                         <div class="layui-input-block">
-                            <input class="layui-input" type="text" placeholder="请输入字典真值" required autocomplete="on" id="value">
+                            <input class="layui-input" type="text" placeholder="请输入字典真值" required autocomplete="on"
+                                   id="value">
                         </div>
                     </div>
 
@@ -97,26 +113,33 @@
 
                         //编辑
                         function confirm() {
-                            var id=document.getElementById("id").value
-                            var type=document.getElementById("type").value
-                            var description=document.getElementById("description").value
-                            var code=document.getElementById("code").value
-                            var value=document.getElementById("value").value
+                            var id = document.getElementById("id").value
+                            var type = document.getElementById("type").value
+                            var description = document.getElementById("description").value
+                            var code = document.getElementById("code").value
+                            var value = document.getElementById("value").value
+
+                            var token = "Bearer " + getCookie("my_token")
 
                             //增加或修改
-                            if(id==''){
+                            if (id == '') {
                                 $.ajax({
-                                    type: "get",
-                                    url: "/admin/add_dict",
-                                    data: {
-                                        type:type,
-                                        description:description,
-                                        code:code,
-                                        value:value
-                                    },
-                                    dataType: "text",
+                                    url: "http://localhost:8763/admin/dataDictionary/add",
+                                    type: "post",
+                                    headers:
+                                        {
+                                            Authorization: token,
+                                            "Content-Type": "application/json"
+                                        },
+                                    data: JSON.stringify({
+                                        type: type,
+                                        description: description,
+                                        code: code,
+                                        value: value
+                                    }),
+                                    dataType: "json",
                                     success: function (msg) {
-                                        if (msg == "1") {
+                                        if (msg['code'] == 0) {
                                             layer.msg("增加成功")
                                             setTimeout(function () {
                                                 window.parent.location.reload();
@@ -129,24 +152,29 @@
                                         layer.msg("请求失败")
                                     }
                                 })
-                            }else{
+                            } else {
                                 $.ajax({
-                                    type: "get",
-                                    url: "/admin/update_dict",
-                                    data: {
-                                        id:id,
-                                        type:type,
-                                        description:description,
-                                        code:code,
-                                        value:value
-                                    },
-                                    dataType: "text",
+                                    url: "http://localhost:8763/admin/dataDictionary/update",
+                                    type: "put",
+                                    headers:
+                                        {
+                                            Authorization: token,
+                                            "Content-Type": "application/json"
+                                        },
+                                    data: JSON.stringify({
+                                        id: id,
+                                        type: type,
+                                        description: description,
+                                        code: code,
+                                        value: value
+                                    }),
+                                    dataType: "json",
                                     success: function (msg) {
-                                        if (msg == "1") {
+                                        if (msg['code'] == 0) {
                                             layer.msg("修改成功")
                                             setTimeout(function () {
                                                 window.parent.location.reload();
-                                            },1500)
+                                            }, 1500)
                                         } else {
                                             layer.msg("修改失败")
                                         }
@@ -173,10 +201,13 @@
                     //动态表格
                     layui.use('table', function () {
                         var table = layui.table
+                        var token = "Bearer " + getCookie("my_token")
 
                         table.render({
                             elem: '#data_dict'
-                            , url: '/admin/findAll_dict' //数据接口
+                            , url: 'http://localhost:8763/admin/dataDictionary/findAll' //数据接口
+                            , method: 'get'
+                            , headers: {Authorization: token}
                             , height: 'full-60'
                             , skin: 'line' //边框样式
                             , even: true  //隔行背景
@@ -185,12 +216,12 @@
                             , page: {
                                 layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
                                 , limit: 10
-                                , limits: [10,20,30]
+                                , limits: [10, 20, 30]
                             }
                             , cols: [
                                 [
                                     {
-                                        field: 'dict_type',
+                                        field: 'type',
                                         title: '字典类型',
                                         width: '20%',
                                         unresize: 'true',
@@ -198,7 +229,7 @@
                                         align: 'center'
                                     }
                                     , {
-                                    field: 'dict_description',
+                                    field: 'description',
                                     title: '字典描述',
                                     width: '20%',
                                     unresize: 'true',
@@ -212,7 +243,7 @@
                                     align: 'center'
                                 }
                                     , {
-                                    field: 'code_value',
+                                    field: 'value',
                                     title: '字典真实值',
                                     width: '20%',
                                     unresize: 'true',
@@ -232,22 +263,25 @@
                         });
 
                         //监听行工具事件
-                        table.on('tool(data_dict)', function(obj){
+                        table.on('tool(data_dict)', function (obj) {
                             var data = obj.data;
-                            if(obj.event === 'del'){
-                                layer.confirm('是否确认删除该条数据', function(index){
+                            var token = "Bearer " + getCookie("my_token")
+
+                            if (obj.event === 'del') {
+                                layer.confirm('是否确认删除该条数据', function (index) {
                                     $.ajax({
-                                        url: '/admin/deleteByID_dict',
-                                        type: 'get',
+                                        url: 'http://localhost:8763/admin/dataDictionary/deleteByID'+"/"+data.id,
+                                        type: 'delete',
+                                        headers: {Authorization: token},
                                         async: true,
-                                        data: {
+                                        /*data: {
                                             id: data.id
-                                        },
+                                        },*/
                                         success: function () {
                                             layer.msg("删除成功")
                                             setTimeout(function () {
                                                 window.location.reload();
-                                            },500)
+                                            }, 500)
 
                                         },
                                         error: function () {
@@ -255,8 +289,8 @@
                                         }
                                     })
                                 });
-                            } else if(obj.event === 'edit'){
-                                var data=obj.data;
+                            } else if (obj.event === 'edit') {
+                                var data = obj.data;
 
                                 layer.open({
                                     type: 1,
@@ -264,27 +298,27 @@
                                     area: ['400px', '370px'],
                                     content: $('#edit-page'),
                                     shade: false,
-                                    success: function(layero, index){
-                                        document.getElementById("id").value=data.id
-                                        document.getElementById("type").value=data.dict_type
-                                        document.getElementById("description").value=data.dict_description
-                                        document.getElementById("code").value=data.code
-                                        document.getElementById("value").value=data.code_value
+                                    success: function (layero, index) {
+                                        document.getElementById("id").value = data.id
+                                        document.getElementById("type").value = data.type
+                                        document.getElementById("description").value = data.description
+                                        document.getElementById("code").value = data.code
+                                        document.getElementById("value").value = data.value
                                     }
                                 })
-                            } else if(obj.event === 'add'){
+                            } else if (obj.event === 'add') {
                                 layer.open({
                                     type: 1,
                                     title: '增加数据字典',
                                     area: ['400px', '370px'],
                                     content: $('#edit-page'),
                                     shade: false,
-                                    success: function(layero, index){
-                                        document.getElementById("id").value=''
-                                        document.getElementById("type").value=''
-                                        document.getElementById("description").value=''
-                                        document.getElementById("code").value=''
-                                        document.getElementById("value").value=''
+                                    success: function (layero, index) {
+                                        document.getElementById("id").value = ''
+                                        document.getElementById("type").value = ''
+                                        document.getElementById("description").value = ''
+                                        document.getElementById("code").value = ''
+                                        document.getElementById("value").value = ''
                                     }
                                 })
                             }
@@ -297,27 +331,4 @@
     </div>
 </div>
 </body>
-
-<!--功能函数-->
-<script>
-    //退出登录
-    function logout() {
-        $.ajax({
-            type: "post",
-            url: "/user/logout",
-            data: {},
-            dataType: "text",
-            success: function (msg) {
-                if (msg == "1") {
-                    window.location.href = "/login";
-                } else {
-                    alert("登出失败!");
-                }
-            },
-            error: function () {
-                alert("请求失败!");
-            }
-        })
-    }
-</script>
 </html>

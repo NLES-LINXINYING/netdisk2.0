@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class DataDictionary {
     private long id;
-    private String dict_type;
-    private String dict_description;
+    private String type;
+    private String description;
     private long code;
-    private String code_value;
+    private String value;
 }

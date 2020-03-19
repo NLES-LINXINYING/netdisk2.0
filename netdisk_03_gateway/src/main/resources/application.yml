@@ -48,12 +48,18 @@ spring:
 
 
         - id: user_routes
-          uri: lb://user
+          uri: http://localhost:8030
           predicates:
             - Method=GET,POST,PUT,DELETE
+            - Path=/user/**
+          filters:
+            - StripPrefix=1
 
 
         - id: file_routes
-          uri: lb://file
+          uri: http://localhost:8030
           predicates:
             - Method=GET,POST,PUT,DELETE
+            - Path=/file/**
+          filters:
+            - StripPrefix=1

@@ -4,7 +4,7 @@
 <mapper namespace="cn.edu.scau.lxy.netdisk.admin.repository.DataDictionaryRepository">
 
     <insert id="add" parameterType="DataDictionary">
-        insert into data_dictionary(dict_type,dict_description,code,code_value) values(#{dict_type},#{dict_description},#{code},#{code_value})
+        insert into data_dictionary(type,description,code,value) values(#{type},#{description},#{code},#{value})
     </insert>
 
     <delete id="deleteByID" parameterType="long">
@@ -20,7 +20,7 @@
     </select>
 
     <update id="update">
-        update data_dictionary set dict_type = #{type}, dict_description = #{description}, code = #{code}, code_value = #{value} where id = #{id}
+        update data_dictionary set type = #{type}, description = #{description}, code = #{code}, value = #{value} where id = #{id}
     </update>
 
     <select id="count" resultType="int">

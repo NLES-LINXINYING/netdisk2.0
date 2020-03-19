@@ -1,3 +1,4 @@
+/*
 package cn.edu.scau.lxy.netdisk.base;
 
 import org.springframework.boot.SpringApplication;
@@ -16,3 +17,4 @@ public class BaseApplication {
         return new SnowflakeIdWorker(1,1);
     }
 }
+*/

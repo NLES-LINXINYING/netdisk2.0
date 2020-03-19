@@ -1,9 +1,11 @@
 package cn.edu.scau.lxy.netdisk.file.repository;
 
 import cn.edu.scau.lxy.netdisk.file.entity.Myshare;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface MyshareRepository {
     public int addfile(Myshare myshare);
     public int addfolder(Myshare myshare);

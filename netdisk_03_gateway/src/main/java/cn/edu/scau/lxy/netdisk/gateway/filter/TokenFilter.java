@@ -27,13 +27,12 @@ public class TokenFilter implements GlobalFilter, Ordered {
 
         //让部分请求跳过该路由器
         String url=exchange.getRequest().getURI().toString();
-        if(url.startsWith("http://localhost:8763/user/user/login")){
+        if(url.startsWith("http://localhost:8763/user/user/login")||url.startsWith("http://localhost:8763/user/user/register")){
             return chain.filter(exchange);
         }
 
 
         String token=exchange.getRequest().getHeaders().getFirst("Authorization");
-        System.out.println(token);
         if(token==null || token.isEmpty()){
             ServerHttpResponse response=exchange.getResponse();
             Map<String,Object> responseData=new HashMap<>();

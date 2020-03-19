@@ -13,7 +13,7 @@ public interface ParameterRepository {
 
     public Parameter findByName(String name);
 
-    public List<Parameter> findAll(int index,int limit);
+    public List<Object> findAll(int index,int limit);
 
     public int update(Parameter parameter);
 

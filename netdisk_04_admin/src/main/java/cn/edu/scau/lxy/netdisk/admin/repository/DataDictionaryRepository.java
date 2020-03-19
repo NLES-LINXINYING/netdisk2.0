@@ -14,9 +14,9 @@ public interface DataDictionaryRepository {
 
     public DataDictionary findByID(long id);
 
-    public List<DataDictionary> findAll(int index, int limit);//分页查询
+    public List<Object> findAll(int index, int limit);//分页查询
 
-    public int update(long id, String type, String description, long code, String value);
+    public int update(DataDictionary dataDictionary);
 
     public int count();
 }

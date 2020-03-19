@@ -1,3 +1,4 @@
+/*
 package cn.edu.scau.lxy.netdisk.base.controller;
 
 import cn.edu.scau.lxy.netdisk.common.entity.SingleResult;
@@ -6,9 +7,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+*/
 /**
  * 统一异常处理类
- */
+ *//*
+
 @RestControllerAdvice
 public class BaseExceptionHandler {
 
@@ -19,3 +22,4 @@ public class BaseExceptionHandler {
         return new SingleResult(false, StatusCode.ERROR,e.getMessage(),null);
     }
 }
+*/

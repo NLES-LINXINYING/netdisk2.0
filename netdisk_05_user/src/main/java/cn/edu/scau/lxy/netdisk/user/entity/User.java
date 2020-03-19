@@ -1,6 +1,5 @@
 package cn.edu.scau.lxy.netdisk.user.entity;
 
-import lombok.Builder;
 import lombok.Data;
 
 @Data

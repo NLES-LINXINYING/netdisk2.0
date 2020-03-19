@@ -52,11 +52,11 @@ public class UserController {
         return 0;
     }*/
 
-    @GetMapping("/deleteByName/{name}")
+    /*@GetMapping("/deleteByName/{name}")
     @ResponseBody
     public int deleteByName(@PathVariable("name") String name){
         return userFeign.deleteByName(name);
-    }
+    }*/
 
     @GetMapping("/findByName/{name}")
     @ResponseBody

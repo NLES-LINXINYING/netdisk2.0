@@ -1,6 +1,9 @@
 package cn.edu.scau.lxy.netdisk.file.controller;
 
 
+import cn.edu.scau.lxy.netdisk.common.entity.MultiResult;
+import cn.edu.scau.lxy.netdisk.common.entity.SingleResult;
+import cn.edu.scau.lxy.netdisk.common.entity.StatusCode;
 import cn.edu.scau.lxy.netdisk.file.repository.FileRepository;
 import cn.edu.scau.lxy.netdisk.file.entity.File;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,48 +18,93 @@ public class FileController {
     @Autowired
     private FileRepository fileRepository;
 
-    @PostMapping("add")
-    public int add(@RequestParam("name") String name, @RequestParam("path") String path, @RequestParam("type") long type, @RequestParam("size") long size, @RequestParam("uid") long uid) {
-        File file = new File();
-        file.setName(name);
-        file.setPath(path);
-        file.setType(type);
-        file.setSize(size);
-        file.setUid(uid);
-        return fileRepository.add(file);
+
+    /*
+     * 功能描述 新建文件
+     * @author linxinying
+     * @date 2020/3/18 10:40
+     * @param file
+     * @return int
+     */
+    @PostMapping("/add")
+    public SingleResult add(@RequestBody File file) {
+        fileRepository.add(file);
+        return new SingleResult(StatusCode.OK,"新建成功",1,null);
     }
 
-    @GetMapping("delete/{id}")
-    public int deleteById(@PathVariable("id") long id) {
-        return fileRepository.deleteById(id);
+
+
+    /*
+     * 功能描述 根据文件ID删除文件
+     * @author linxinying
+     * @date 2020/3/18 10:43
+     * @param id
+     * @return int
+     */
+    @DeleteMapping("/delete/{id}")
+    public SingleResult deleteById(@PathVariable long id) {
+        fileRepository.deleteById(id);
+        return new SingleResult(StatusCode.OK,"删除成功",1,null);
     }
 
-    @GetMapping("findById")
-    public File findById(@RequestParam("id") long id) {
-        return fileRepository.findById(id);
+
+
+    /*
+     * 功能描述 根据文件ID查询文件
+     * @author linxinying
+     * @date 2020/3/18 10:44
+     * @param id
+     * @return cn.edu.scau.lxy.netdisk.file.entity.File
+     */
+    @GetMapping("/findById")
+    public SingleResult findById(@RequestParam long id) {
+        File file = fileRepository.findById(id);
+        return new SingleResult(StatusCode.OK,"查询成功",1,file);
     }
 
-    @GetMapping("findByPath")
-    public List<File> findByPath(@RequestParam("uid") long uid, @RequestParam("path") String path) {
-        return fileRepository.findByPath(uid,path);
+
+
+    /*
+     * 功能描述 根据用户ID和文件类型查找文件
+     * @author linxinying
+     * @date 2020/3/18 10:02
+     * @param uid
+     * @param type
+     * @return cn.edu.scau.lxy.netdisk.common.entity.MultiResult
+     */
+    @GetMapping("/findByType")
+    public MultiResult findByType(@RequestParam("uid") long uid, @RequestParam("type") long type) {
+        List<Object> list=fileRepository.findByType(uid,type);
+        return new MultiResult(0,"",list.size(),list);
     }
 
-    @GetMapping("findByName")
-    public List<File> findByName(@RequestParam("uid") long uid, @RequestParam("name") String name) {
-        return fileRepository.findByName(uid, name);
-    }
 
-    @GetMapping("findByType")
-    public List<File> findByType(@RequestParam("uid") long uid, @RequestParam("type") long type) {
-        return fileRepository.findByType(uid, type);
-    }
 
-    @GetMapping("findByNameAndType")
-    public List<File> findByNameAndType(@RequestParam("uid") long uid, @RequestParam("type") long type, @RequestParam("name") String name) {
+    /*
+     * 功能描述 根据用户ID、文件名、文件类型查询文件
+     * @author linxinying
+     * @date 2020/3/18 10:51
+     * @param uid
+     * @param type
+     * @param name
+     * @return java.util.List<java.lang.Object>
+     */
+    @GetMapping("/findByNameAndType")
+    public List<Object> findByNameAndType(@RequestParam("uid") long uid, @RequestParam("type") long type, @RequestParam("name") String name) {
         return fileRepository.findByNameAndType(uid, type,name);
     }
 
-    @GetMapping("updateName")
+
+
+    /*
+     * 功能描述 根据文件ID修改文件名
+     * @author linxinying
+     * @date 2020/3/18 10:52
+     * @param id
+     * @param name
+     * @return int
+     */
+    @PutMapping("updateName")
     public int updateName(@RequestParam("id") long id, @RequestParam("name") String name) {
         File file=fileRepository.findById(id);
         File file1=fileRepository.findByNameAndPath(name,file.getPath());
@@ -69,23 +117,17 @@ public class FileController {
         return fileRepository.updateName(id, name);
     }
 
-    /*@GetMapping("updatePath/{id}/{path}/{ffid}")
-    public int updatePath(@PathVariable("id") long id, @PathVariable("path") String path, @PathVariable("ffid") long ffid) {
-        return fileRepository.updatePath(id, path, ffid);
+
+
+
+    /*@GetMapping("findByPath")
+    public List<Object> findByPath(@RequestParam("uid") long uid, @RequestParam("path") String path) {
+        return fileRepository.findByPath(uid,path);
+    }
+
+    @GetMapping("findByName")
+    public List<Object> findByName(@RequestParam("uid") long uid, @RequestParam("name") String name) {
+        return fileRepository.findByName(uid, name);
     }*/
 
-    @GetMapping("/count")
-    public int count() {
-        return fileRepository.count();
-    }
-
-    @GetMapping("/countMemory")
-    public long countMemory(@RequestParam("uid") long uid){
-        long usedMemory=0;
-        List<File> list=fileRepository.findByUid(uid);
-        for(int i=0;i<list.size();i++){
-            usedMemory += list.get(i).getSize();
-        }
-        return usedMemory;
-    }
 }

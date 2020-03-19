@@ -23,7 +23,7 @@ public class CopyController {
     @Autowired
     private FileRepository fileRepository;
 
-    @PostMapping("copydemo")
+    @PostMapping("/copy")
     public void copy(@RequestParam("ffids") String ffids,@RequestParam("fids") String fids,@RequestParam("path") String path,@RequestParam("uid") long uid) throws IOException {
         System.out.println(path);
         Folder folder=new Folder();
@@ -59,7 +59,6 @@ public class CopyController {
 
 
     public void copyFile(java.io.File source,String dest,long uid)throws IOException {
-        System.out.println("copy");
 
         //创建目的地文件夹
         java.io.File destfile = new java.io.File(dest);
