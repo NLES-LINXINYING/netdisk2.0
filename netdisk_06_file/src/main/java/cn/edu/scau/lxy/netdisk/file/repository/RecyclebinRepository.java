@@ -12,7 +12,7 @@ public interface RecyclebinRepository {
     public int delete(long id);
     public int deleteByFFid(long ffid);
     public int deleteByFid(long fid);
-    public List<Recyclebin> findAll(long uid);
+    public List<Object> findAll(long uid);
     public Recyclebin findById(long id);
     public int count();
 }

@@ -2,13 +2,15 @@ package cn.edu.scau.lxy.netdisk.file.controller;
 
 import cn.edu.scau.lxy.netdisk.common.entity.MultiResult;
 import cn.edu.scau.lxy.netdisk.common.entity.StatusCode;
-import cn.edu.scau.lxy.netdisk.file.entity.File;
-import cn.edu.scau.lxy.netdisk.file.entity.Folder;
 import cn.edu.scau.lxy.netdisk.file.repository.FileRepository;
 import cn.edu.scau.lxy.netdisk.file.repository.FolderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +38,11 @@ public class AllController {
      * @return cn.edu.scau.lxy.netdisk.common.entity.MultiResult
      */
     @GetMapping("/findByPath")
-    public MultiResult findByPath(@RequestParam long uid,@RequestParam String path){
+    public MultiResult findByPath(HttpServletRequest request){
+        long uid=Long.parseLong(request.getParameter("uid"));
+        String path=request.getParameter("path");
+        //System.out.println(path);
+
         List<Object> list=new ArrayList<>();
         list.addAll(folderRepository.findByPath(uid,path));
         list.addAll(fileRepository.findByPath(uid,path));
@@ -55,7 +61,9 @@ public class AllController {
      */
     @GetMapping("/findByName")
     public MultiResult findByName(@RequestParam long uid,@RequestParam String name){
-        List<Object> list=fileRepository.findByName(uid,name);
+        List<Object> list=new ArrayList<>();
+        list.addAll(folderRepository.findByName(uid,name));
+        list.addAll(fileRepository.findByName(uid,name));
         return new MultiResult(StatusCode.OK,"查询成功",list.size(),list);
     }
 }

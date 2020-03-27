@@ -15,7 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/copy")
+@RequestMapping("")
 public class CopyController {
 
     @Autowired
@@ -23,6 +23,18 @@ public class CopyController {
     @Autowired
     private FileRepository fileRepository;
 
+
+
+    /*
+     * 功能描述 文件复制，支持多文件多文件夹同时复制
+     * @author linxinying
+     * @date 2020/3/20 9:22
+     * @param ffids
+     * @param fids
+     * @param path 复制到的路径
+     * @param uid
+     * @return void
+     */
     @PostMapping("/copy")
     public void copy(@RequestParam("ffids") String ffids,@RequestParam("fids") String fids,@RequestParam("path") String path,@RequestParam("uid") long uid) throws IOException {
         System.out.println(path);

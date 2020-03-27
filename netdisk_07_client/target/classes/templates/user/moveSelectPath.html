@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/url/urlDecode.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/cookie/token.js}"></script>
+
+    <cite id="path1" hidden></cite>
+    <cite id="path2" hidden></cite>
+</head>
+
+
+<body>
+<div style="overflow-y: hidden">
+    <div style="position:absolute;z-index: 1000;">
+        <button class="layui-btn" onclick="back()">返回上一级</button>
+    </div>
+
+    <div style="position:relative;height: 250px;z-index: 999;top: -10px;">
+        <table id="file" lay-filter="file"></table>
+    </div>
+
+    <div class="layui-form-item" style="margin-left: 10px;margin-top: 5px;">
+        <input type="text" id="curpath" style="height: 35px;width: 250px;">
+        <button class="layui-btn" style="margin-left: 10px;" onclick="confirm()">确认</button>
+        <button class="layui-btn" onclick="cancel()">取消</button>
+    </div>
+</div>
+
+
+<script>
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    //动态表格
+    layui.use('table', function () {
+        var table = layui.table;
+        var result = getParameter()
+        var uid = result["uid"]
+        var ffid = result["ffid"]
+        var fid = result["fid"]
+        var path = document.getElementById("path1").innerText
+        var token = "Bearer " + getCookie()
+
+
+        table.render({
+            elem: '#file'
+            , url: 'http://localhost:8763/file/folder/findByPath?uid=' + uid + "&path=" + path
+            , method: 'get'
+            , headers: {Authorization: token}
+            , height: '250'
+            , skin: 'nob' //无边框
+            , cols: [
+                [
+                    {field: 'name', unresize: 'true', templet: '#fileicon'}
+                ]
+            ]
+            , id: 'ftable'
+        });
+    });
+</script>
+
+<!--根据文件类型在前面&后面显示图标,"nf-icon"默认隐藏，新建文件夹-->
+<script type="text/html" id="fileicon">
+    <!--文件夹-->
+    <i class="fa fa-folder fa-2x" style="color: yellow;position: relative;top: 10%;">&nbsp;</i>
+    <a style="color:#26add0;position: relative;top: 0%;" onclick="reload('{{d.name}}')">{{ d.name }}</a>
+</script>
+</body>
+
+
+<script>
+    var token = "Bearer " + getCookie()
+
+    //进一步
+    function reload(name) {
+        var result = getParameter()
+        var uid = result["uid"]
+        var curpath = document.getElementById("path2").innerText
+
+
+        //更新选择窗口路径
+        document.getElementById("path2").innerText = curpath + name + "/"
+        curpath = document.getElementById("path2").innerText
+
+
+        layui.use('table', function () {
+            var table = layui.table
+            table.reload('ftable', {
+                url: 'http://localhost:8763/file/folder/findByPath?uid=' + uid + "&path=" + curpath
+                , method: 'get'
+                , headers: {Authorization: token}
+            })
+        })
+
+        //更新文本框显示路径
+        document.getElementById("curpath").value = curpath
+    }
+
+
+    //返回上一层
+    function back() {
+        var result = getParameter()
+        var uid = result["uid"]
+
+        var syspath = document.getElementById("path1").innerText
+        var path = document.getElementById("path2").innerText
+
+
+        //不是根目录才可以
+        if (syspath != path) {
+            var strs = path.split('/')
+            var curpath = ""
+            for (var i = 0; i < strs.length - 2; i++) {
+                curpath += strs[i] + '/'
+            }
+            //更新选择窗口路径
+            document.getElementById("path2").innerText = curpath
+
+            var table = layui.table
+            table.reload('ftable', {
+                url: 'http://localhost:8763/file/folder/findByPath?uid=' + uid + "&path=" + curpath
+                , method: 'get'
+                , headers: {Authorization: token}
+            })
+
+            //更新文本框显示路径
+            document.getElementById("curpath").value = curpath
+        } else {
+            layer.msg("当前为根目录", {time: 800})
+        }
+    }
+
+    function confirm() {
+        var result = getParameter()
+        var uid = result["uid"]
+        var ffid = result["ffid"]
+        var fid = result["fid"]
+
+        if (ffid == "") {
+            ffid = "null"
+        }
+        if (fid == "") {
+            fid = "null"
+        }
+
+        var path = document.getElementById("curpath").value
+
+
+        $.ajax({
+            url: 'http://localhost:8763/file/move',
+            type: 'post',
+            headers: {Authorization: token},
+            data: {
+                path: path,
+                fids: fid,
+                ffids: ffid
+            },
+            success: function (msg) {
+                layer.msg('移动成功', {
+                    time: 800
+                })
+            },
+            error: function () {
+                layer.msg('后台出错', {
+                    time: 800
+                })
+            }
+        })
+        setTimeout(function () {
+            window.parent.location.reload()
+        }, 800)
+    }
+
+    function cancel() {
+        parent.location.reload()
+    }
+
+
+    $(function () {
+        //请求用户根目录
+        var token = "Bearer " + getCookie()
+
+        $.ajax({
+            url: 'http://localhost:8763/user/user/getUserInfo',
+            type: 'get',
+            headers: {Authorization: token},
+            dataType: 'json',
+            async: false,
+            data: {},
+            success: function (result) {
+                document.getElementById("path1").innerText = "D:/upload/" + result['data']['name'] + "/"
+            },
+            error: function (msg) {
+                layer.msg("请求失败", {time: 800})
+            }
+        })
+
+
+        //用户根目录
+        var syspath = document.getElementById("path1").innerText
+        //选择窗口当前目录
+        document.getElementById("path2").innerText = syspath
+        //当前目录
+        document.getElementById("curpath").value = syspath
+    })
+</script>
+</html>

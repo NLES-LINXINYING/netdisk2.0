@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 
 @RestController
-@RequestMapping("/delete")
+@RequestMapping("")
 public class DeleteController {
 
     @Autowired
@@ -27,8 +27,17 @@ public class DeleteController {
     private RecyclebinRepository recyclebinRepository;
 
 
-
-    @PostMapping("/deletedemo")
+    /*
+     * 功能描述 文件非彻底删除，移动到回收站
+     * @author linxinying
+     * @date 2020/3/20 9:51
+     * @param ffids
+     * @param fids
+     * @param uid
+     * @param uname
+     * @return void
+     */
+    @PostMapping("/delete")
     public void delete(@RequestParam("ffids") String ffids,@RequestParam("fids") String fids,@RequestParam("uid") long uid,@RequestParam("uname") String uname) throws IOException {
         //回收站路径
         String recyclePath="D:/upload/"+uname+"/回收站/";
@@ -126,6 +135,8 @@ public class DeleteController {
         String dst=src.replaceAll("\\\\","/");
         return dst;
     }
+
+
 
 
     /*//从回收站删除资源

@@ -10,7 +10,7 @@ public interface MyshareRepository {
     public int addfile(Myshare myshare);
     public int addfolder(Myshare myshare);
     public int deleteById(long id);
-    public List<Myshare> findAll(long uid);
+    public List<Object> findAll(long uid);
     public Myshare findById(long id);
     public List<Myshare> findByLink(String link);
     public int updateTimesOfBrowse(long id,long timesOfBrowse);

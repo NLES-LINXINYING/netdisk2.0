@@ -3,12 +3,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title></title>
 
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
-    <script th:src="@{/layui/layui.js}"></script>
-    <script th:src="@{/js/urlDecode.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/url/urlDecode.js}"></script>
     <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/cookie/token.js}"></script>
 </head>
 
 
@@ -98,14 +98,13 @@
 
         var code = $("input[name='code']:checked").attr("value");
         var time = $("input[name='time']:checked").attr("value");
-        console.log(uid)
-        console.log(ffid)
-        console.log(fid)
+        var token="Bearer "+getCookie()
 
 
         $.ajax({
-            url: '/myshare/add',
+            url: 'http://localhost:8763/file/myshare/add',
             type: 'post',
+            headers: {Authorization: token},
             dataType: 'json',
             data: {
                 code: code,
@@ -118,8 +117,8 @@
                 var elem=document.getElementById("asform")
                 elem.style.display="none"
 
-                document.getElementById("link").value=msg.link
-                document.getElementById("code").value=msg.code
+                document.getElementById("link").value=msg['data']['link']
+                document.getElementById("code").value=msg['data']['code']
                 document.getElementById("sdform").style.display="inline"
             },
             error: function () {

@@ -63,3 +63,12 @@ spring:
             - Path=/file/**
           filters:
             - StripPrefix=1
+
+
+        - id: client_routes
+          uri: http://localhost:8040
+          predicates:
+            - Method=GET
+            - Path=/client/**
+          filters:
+            - StripPrefix=1

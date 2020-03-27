@@ -11,19 +11,22 @@
     <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
 
     <!--引用部分代码，便于html和js分开-->
-    <script type="text/javascript" th:src="@{/js/upload.js}"></script>
-    <script type="text/javascript" th:src="@{/js/logout.js}"></script>
-    <script type="text/javascript" th:src="@{/js/capacity.js}"></script>
-    <script type="text/javascript" th:src="@{/js/download.js}"></script>
-    <script type="text/javascript" th:src="@{/js/timeformat.js}"></script>
-    <script type="text/javascript" th:src="@{/js/share.js}"></script>
-    <script type="text/javascript" th:src="@{/js/copyto.js}"></script>
-    <script type="text/javascript" th:src="@{/js/moveto.js}"></script>
-    <script type="text/javascript" th:src="@{/js/sizeformat.js}"></script>
-    <script type="text/javascript" th:src="@{/js/delete.js}"></script>
-    <script type="text/javascript" th:src="@{/js/rename.js}"></script>
-    <script type="text/javascript" th:src="@{/js/folder_click.js}"></script>
-    <script type="text/javascript" th:src="@{/js/findName.js}"></script>
+    <script type="text/javascript" th:src="@{/js/signInAndSignUp/logout.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/header/PageInit.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/timeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/copyto.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/sizeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/findName.js}"></script>
+    <script type="text/javascript" th:src="@{/js/cookie/token.js}"></script>
+
+    <cite id="uid" hidden></cite>
+    <cite id="path1" hidden></cite>  <!--当前用户根目录-->
+
+    <style>
+        .layui-table-view {
+            margin-top: 0;
+        }
+    </style>
 </head>
 
 
@@ -36,13 +39,7 @@
             <li class="layui-nav-item">
                 <a href="#2">
                     <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
-                    <cite th:text="${session.name}" id="username1"></cite>
-                    <cite th:text="${session.id}" id="uid1" hidden></cite>
-                    <cite th:text="${session.usedMemory}" id="usedMemory1" hidden></cite>
-                    <cite th:text="${session.totalMemory}" id="totalMemory1" hidden></cite>
-                    <cite th:text="${session.syspath}" id="path1" hidden></cite>
-                    <cite th:text="${session.curpath}" id="path2" hidden></cite>
-                    <cite th:text="${session.page}" id="page1" hidden></cite>
+                    <cite id="username"></cite>
                 </a>
                 <dl class="layui-nav-child">
                     <dd><a href="/redirect/user/personalCenter">个人资料</a></dd>
@@ -64,7 +61,8 @@
                             style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;全部文件</a></li>
                     <li class="layui-nav-item"><a href="/redirect/user/page_picture">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;图片</a>
                     </li>
-                    <li class="layui-nav-item"><a href="/redirect/user/page_word">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;文档</a>
+                    <li class="layui-nav-item"><a
+                            href="/redirect/user/page_word">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;文档</a>
                     </li>
                     <li class="layui-nav-item"><a href="/redirect/user/page_video">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;视频</a>
                     </li>
@@ -74,7 +72,7 @@
                     </li>
                     <li class="layui-nav-item"><a href="/redirect/user/page_other">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;其它</a>
                     </li>
-                    <li class="layui-nav-item"><a  href="/redirect/user/page_privateSpace"><i
+                    <li class="layui-nav-item"><a href="/redirect/user/page_privateSpace"><i
                             class="layui-icon layui-icon-password"
                             style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;私密空间</a>
                     </li>
@@ -85,7 +83,8 @@
                         <a href="/redirect/user/page_acceptShare">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;接收分享</a>
                     </li>
                     <li class="layui-nav-item  layui-bg-green">
-                        <a href="/redirect/user/page_recyclebin"><i class="layui-icon layui-icon-delete" style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;回收站</a>
+                        <a href="/redirect/user/page_recyclebin"><i class="layui-icon layui-icon-delete"
+                                                                    style="font-size: 17px; color: white;"></i>&nbsp;&nbsp;回收站</a>
                     </li>
                 </div>
 
@@ -97,11 +96,10 @@
                         </div>
                         <li style="padding-top: 5px;">
                             <a style="color:#fff;" id="text1"></a>
-                            <a  href="/redirect/user/page_expand" style="margin-left:25%;color:#009688;">扩容</a>
+                            <a href="/redirect/user/page_expand" style="margin-left:25%;color:#009688;">扩容</a>
                         </li>
                     </div>
                 </div>
-
 
 
             </ul>
@@ -130,6 +128,7 @@
         <script type="text/html" id="timeformat1">
             <p>{{ timeformat(d.timeOfDelete) }}</p>
         </script>
+
         <script type="text/html" id="timeformat2">
             <p>{{ timeformat(d.timeOfEffective) }}</p>
         </script>
@@ -150,17 +149,35 @@
 
         <!--动态表格-->
         <script type="text/javascript">
+            var token = "Bearer " + getCookie()
+            var uid = ""
+            $.ajax({
+                url: 'http://localhost:8763/user/user/getUserInfo',
+                type: 'get',
+                headers: {Authorization: token},
+                dataType: 'json',
+                async: false,
+                data: {},
+                success: function (result) {
+                    uid = result['data']['id']
+                },
+                error: function (msg) {
+                    layer.msg("请求失败", {time: 800})
+                }
+            })
+
             layui.use('element', function () {
                 var element = layui.element;
             });
 
             layui.use('table', function () {
                 var table = layui.table;
-                var uid=document.getElementById("uid1").innerText
 
                 table.render({
                     elem: '#file'
-                    , url: '/recyclebin/findAll'
+                    , url: 'http://localhost:8763/file/recyclebin/findAll'
+                    , type: 'get'
+                    , headers: {Authorization: token}
                     , where: {
                         uid: uid
                     }
@@ -172,19 +189,42 @@
                     , cols: [
                         [ //表头
                             {type: 'checkbox', title: '全选', unresize: 'true'}
-                            , {field: 'fid', title: '文件名', width: '20%', unresize: 'true', sort: true, templet: '#fileicon'}
+                            , {
+                            field: 'fid',
+                            title: '文件名',
+                            width: '20%',
+                            unresize: 'true',
+                            sort: true,
+                            templet: '#fileicon'
+                        }
                             , {toolbar: '#toolbar', width: '15%'}
                             , {field: 'fid', title: '大小', width: '15%', unresize: 'true', sort: true}
-                            , {field: 'timeOfDelete', title: '删除时间', width: '20%', unresize: 'true', sort: true, templet: '#timeformat1'}
-                            , {field: 'timeOfEffective', title: '有效时间', width: '20%', unresize: 'true', sort: true, templet: '#timeformat2'}
+                            , {
+                            field: 'timeOfDelete',
+                            title: '删除时间',
+                            width: '20%',
+                            unresize: 'true',
+                            sort: true,
+                            templet: '#timeformat1'
+                        }
+                            , {
+                            field: 'timeOfEffective',
+                            title: '有效时间',
+                            width: '20%',
+                            unresize: 'true',
+                            sort: true,
+                            templet: '#timeformat2'
+                        }
                         ]
                     ]
-                    ,id:'ftable'
+                    , id: 'ftable'
                 });
             });
         </script>
 
         <script type="text/javascript">
+            var token="Bearer "+getCookie()
+
             //还原
             function revert() {
                 var data = layui.table.checkStatus('ftable').data
@@ -195,7 +235,7 @@
                 } else {
                     var rids = new Array();
                     for (var i = 0; i < length; i++) {
-                        rids[i]=data[i].id
+                        rids[i] = data[i].id
                     }
 
                     layer.open({
@@ -207,8 +247,9 @@
                         btnAlign: 'c',
                         btn1: function (index, layero) {
                             $.ajax({
-                                url: '/recyclebin/revert',
+                                url: 'http://localhost:8763/file/recyclebin/revert',
                                 type: 'post',
+                                headers: {Authorization: token},
                                 data: {
                                     rids: rids.toString(),
                                 },
@@ -223,7 +264,7 @@
                             })
                             setTimeout(function () {
                                 window.location.reload()
-                            },1000)
+                            }, 1000)
                         },
                         btn2: function (index, layero) {
                             layer.closeAll()
@@ -231,7 +272,8 @@
                         cancel: function (index, layero) {
                             layer.closeAll()
                         }
-                    });}
+                    });
+                }
             }
 
             //删除
@@ -244,7 +286,7 @@
                 } else {
                     var rids = new Array();
                     for (var i = 0; i < length; i++) {
-                        rids[i]=data[i].id
+                        rids[i] = data[i].id
                     }
 
                     layer.open({
@@ -256,8 +298,9 @@
                         btnAlign: 'c',
                         btn1: function (index, layero) {
                             $.ajax({
-                                url: '/recyclebin/delete',
+                                url: 'http://localhost:8763/file/recyclebin/delete',
                                 type: 'post',
+                                headers: {Authorization: token},
                                 data: {
                                     rids: rids.toString(),
                                 },
@@ -274,7 +317,7 @@
                             })
                             setTimeout(function () {
                                 window.location.reload()
-                            },1000)
+                            }, 1000)
                         },
                         btn2: function (index, layero) {
                             layer.closeAll()
@@ -282,7 +325,8 @@
                         cancel: function (index, layero) {
                             layer.closeAll()
                         }
-                    });}
+                    });
+                }
             }
         </script>
     </div>

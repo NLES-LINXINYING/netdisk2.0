@@ -34,12 +34,52 @@ public class UserController {
     private JwtUtil jwtUtil;
 
 
+    /*
+     * 功能描述 修改密码时判断用户输入的原密码是否正确
+     * @author linxinying
+     * @date 2020/3/26 20:30
+     * @param name
+     * @param password
+     * @return java.lang.String
+     */
+    @GetMapping("/checkPassword1")
+    public SingleResult checkPassword1(HttpServletRequest request){
+        String token=request.getHeader("Authorization");
+        token=token.substring(7);
+        String oldPW=request.getParameter("password");
 
-    @GetMapping("/updatePassword1/{name}/{password}")
-    public String updatePassword1(@PathVariable("name") String name,@PathVariable("password") String password){
-        int result=userRepository.updatePassword1(name,password);
-        return userRepository.findByName(name).toString();
+        Claims claims=jwtUtil.parseJWT(token);
+        String username=claims.getSubject();
+        User user=userRepository.findByName(username);
+
+        Boolean flag=encoder.matches(oldPW,user.getPassword());
+
+        return new SingleResult(StatusCode.OK,"查询成功",1, flag);
     }
+
+    /*
+     * 功能描述 修改登陆密码
+     * @author linxinying
+     * @date 2020/3/26 20:42
+     * @param name
+     * @param password
+     * @return java.lang.String
+     */
+    @PutMapping("/updatePassword1")
+    public SingleResult updatePassword1(HttpServletRequest request){
+        String token=request.getHeader("Authorization");
+        token=token.substring(7);
+        String newPw=request.getParameter("password");
+
+        Claims claims=jwtUtil.parseJWT(token);
+        String username=claims.getSubject();
+
+        int result=userRepository.updatePassword1(username,encoder.encode(newPw));
+        return new SingleResult(StatusCode.OK,"",1,result);
+    }
+
+
+
 
     @GetMapping("/updatePassword2/{name}/{password2}")
     public String updatePassword2(@PathVariable("name") String name,@PathVariable("password2") String password2){
@@ -48,14 +88,48 @@ public class UserController {
         return userRepository.findByName(name).toString();
     }
 
-    @GetMapping("/updatePhone")
-    public int updatePhone(@RequestParam("id") long id,@RequestParam("phone") String phone){
-        return userRepository.updatePhone(id,phone);
+
+    /*
+     * 功能描述 根据token和新手机号修改手机号
+     * @author linxinying
+     * @date 2020/3/26 21:41
+     * @param id
+     * @param phone
+     * @return int
+     */
+    @PutMapping("/updatePhone")
+    public SingleResult updatePhone(HttpServletRequest request){
+        String token=request.getHeader("Authorization");
+        token=token.substring(7);
+        String phone=request.getParameter("phone");
+
+        Claims claims=jwtUtil.parseJWT(token);
+        long uid=Long.parseLong(claims.getId());
+
+        int result= userRepository.updatePhone(uid,phone);
+        return new SingleResult(StatusCode.OK,"",1,result);
     }
 
-    @GetMapping("/updateEmail")
-    public int updateEmail(@RequestParam("id") long id,@RequestParam("email") String email){
-        return userRepository.updateEmail(id,email);
+
+    /*
+     * 功能描述 根据token和新邮箱号修改邮箱号
+     * @author linxinying
+     * @date 2020/3/26 22:21
+     * @param id
+     * @param email
+     * @return int
+     */
+    @PutMapping("/updateEmail")
+    public SingleResult updateEmail(HttpServletRequest request){
+        String token=request.getHeader("Authorization");
+        token=token.substring(7);
+        String email=request.getParameter("email");
+
+        Claims claims=jwtUtil.parseJWT(token);
+        long uid=Long.parseLong(claims.getId());
+
+        int result= userRepository.updateEmail(uid,email);
+        return new SingleResult(StatusCode.OK,"",1,result);
     }
 
 
@@ -94,6 +168,8 @@ public class UserController {
             map.put("token",token);
             map.put("role","admin");
         }
+        map.put("uid",user.getId());
+        map.put("uname",user.getName());
         return new SingleResult(StatusCode.OK,"登录成功",1, map);
     }
 
@@ -158,7 +234,27 @@ public class UserController {
         Claims claims=jwtUtil.parseJWT(token);
         String username=claims.getSubject();
         User user=userRepository.findByName(username);
-        return new SingleResult(StatusCode.OK,"登录成功",1, username);
+        return new SingleResult(StatusCode.OK,"查询成功",1, username);
+    }
+
+
+
+    /*
+     * 功能描述：根据token获取用户信息
+     * @author linxinying
+     * @date 2020/3/17 18:48
+     * @param request
+     * @return cn.edu.scau.lxy.netdisk.common.entity.SingleResult
+     */
+    @GetMapping("/getUserInfo")
+    public SingleResult getUserInfo(HttpServletRequest request){
+        String token=request.getHeader("Authorization");
+        token=token.substring(7);
+
+        Claims claims=jwtUtil.parseJWT(token);
+        String username=claims.getSubject();
+        User user=userRepository.findByName(username);
+        return new SingleResult(StatusCode.OK,"查询成功",1, user);
     }
 
 
@@ -215,4 +311,6 @@ public class UserController {
         userRepository.updateUsedMemory(uid,total);
         return new SingleResult(StatusCode.OK,"更新成功",1,total);
     }
+
+
 }

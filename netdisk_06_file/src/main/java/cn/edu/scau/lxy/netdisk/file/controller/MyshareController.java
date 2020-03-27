@@ -1,13 +1,22 @@
 package cn.edu.scau.lxy.netdisk.file.controller;
 
+import cn.edu.scau.lxy.netdisk.common.entity.MultiResult;
+import cn.edu.scau.lxy.netdisk.common.entity.SingleResult;
+import cn.edu.scau.lxy.netdisk.common.entity.StatusCode;
+import cn.edu.scau.lxy.netdisk.file.entity.File;
+import cn.edu.scau.lxy.netdisk.file.entity.Folder;
 import cn.edu.scau.lxy.netdisk.file.repository.FileRepository;
+import cn.edu.scau.lxy.netdisk.file.repository.FolderRepository;
 import cn.edu.scau.lxy.netdisk.file.repository.MyshareRepository;
 import cn.edu.scau.lxy.netdisk.file.entity.Myshare;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -19,9 +28,23 @@ public class MyshareController {
     private MyshareRepository myshareRepository;
     @Autowired
     private FileRepository fileRepository;
+    @Autowired
+    private FolderRepository folderRepository;
 
-    @PostMapping("add")
-    public Myshare add(@RequestParam("time") int time,@RequestParam("code") int code,@RequestParam("uid") long uid, @RequestParam(value = "fid",required = false) String fid, @RequestParam(value = "ffid",required = false) String ffid) throws UnsupportedEncodingException {
+
+    /*
+     * 功能描述 创建分享链接
+     * @author linxinying
+     * @date 2020/3/19 20:50
+     * @param time 链接有效时间（0，1，2分别代表1天、7天、永久）
+     * @param code 提取码
+     * @param uid 用户ID
+     * @param fid 文件ID数组
+     * @param ffid 文件夹ID数组
+     * @return cn.edu.scau.lxy.netdisk.file.entity.Myshare
+     */
+    @PostMapping("/add")
+    public SingleResult add(@RequestParam("time") int time, @RequestParam("code") int code, @RequestParam("uid") long uid, @RequestParam(value = "fid",required = false) String fid, @RequestParam(value = "ffid",required = false) String ffid) throws UnsupportedEncodingException {
        System.out.println(ffid+fid);
         Myshare myshare=new Myshare();
 
@@ -80,11 +103,20 @@ public class MyshareController {
             }
         }
 
-        return myshare;
+        return new SingleResult(StatusCode.OK,"创建成功",1,myshare);
     }
 
 
-    @GetMapping("delete")
+
+
+    /*
+     * 功能描述 取消分享，支持多个mid
+     * @author linxinying
+     * @date 2020/3/21 13:03
+     * @param mids
+     * @return void
+     */
+    @GetMapping("/delete")
     public void deleteById(@RequestParam("mids") String mids) {
         String[] midstrs=splitIds(mids);
         for(int i=0;i< midstrs.length;i++){
@@ -92,17 +124,72 @@ public class MyshareController {
         }
     }
 
-    @GetMapping("findAll/{uid}")
-    public List<Myshare> findAll(@PathVariable("uid") long uid) {
-        return myshareRepository.findAll(uid);
+
+
+    /*
+     * 功能描述 根据用户ID查询所有分享
+     * @author linxinying
+     * @date 2020/3/21 13:09
+     * @param uid
+     * @return cn.edu.scau.lxy.netdisk.common.entity.MultiResult
+     */
+    @GetMapping("/findAll")
+    public MultiResult findAll(HttpServletRequest request) {
+        long uid=Long.parseLong(request.getParameter("uid"));
+        List<Object> list= myshareRepository.findAll(uid);
+        return new MultiResult(StatusCode.OK,"查询成功",list.size(),list);
     }
 
-    @GetMapping("findByLink")
-    public List<Myshare> findByLink(@RequestParam("link") String link){
-        return myshareRepository.findByLink(link);
+
+    /*
+     * 功能描述 根据链接和提取码提取资源
+     * @author linxinying
+     * @date 2020/3/21 15:14
+     * @param link
+     * @param code
+     * @return cn.edu.scau.lxy.netdisk.common.entity.MultiResult
+     */
+    @GetMapping("/check")
+    public MultiResult check(@RequestParam("link") String link,@RequestParam("code") String code) throws UnsupportedEncodingException {
+        List<Myshare> list=myshareRepository.findByLink(link);
+
+        //提取码不正确
+        if(!list.get(0).getCode().equals(code)){
+            return new MultiResult(StatusCode.ACCESSERROR,"提取码不正确",0,null);
+        }
+
+        List<Object> all=new ArrayList<>();
+        List<Folder> fflist=new ArrayList<>();
+        List<File> flist=new ArrayList<>();
+
+        String paramstr= URLDecoder.decode(link.substring(link.lastIndexOf("?")+1),"UTF-8");
+        String[] strs=paramstr.split("&");
+        String[] ffids;
+        String[] fids;
+        for(int i=0;i<strs.length;i++){
+            System.out.println(strs[i]);
+            if(strs[i].contains("ffid")){
+                ffids=splitIds(strs[i].substring(strs[i].lastIndexOf("=")+1));
+                //System.out.println(ffids[0]);
+                for(int j=0;j<ffids.length;j++){
+                    fflist.add(folderRepository.findById(Long.parseLong(ffids[j])));
+                }
+            }else{
+                fids=splitIds(strs[i].substring(strs[i].lastIndexOf("=")+1));
+                //System.out.println(fids[0]);
+                for(int j=0;j<fids.length;j++){
+                    flist.add(fileRepository.findById(Long.parseLong(fids[j])));
+                }
+            }
+        }
+        all.addAll(fflist);
+        all.addAll(flist);
+
+        return new MultiResult(StatusCode.OK,"提取成功",all.size(),all);
     }
 
-    @GetMapping("updateTimesOfBrowse/{id}")
+
+    @GetMapping("/updateTimesOfBrowse/{id}")
     public int updateTimesOfBrowse(@PathVariable("id") long id) {
         //在原来的基础上加“1”
         long cnt=myshareRepository.findById(id).getTimesOfBrowse();
@@ -110,7 +197,7 @@ public class MyshareController {
         return myshareRepository.updateTimesOfBrowse(id,cnt);
     }
 
-    @GetMapping("updateTimesOfSave/{id}")
+    @GetMapping("/updateTimesOfSave/{id}")
     public int updateTimesOfSave(@PathVariable("id") long id) {
         //在原来的基础上加“1”
         long cnt=myshareRepository.findById(id).getTimesOfSave();
@@ -118,7 +205,7 @@ public class MyshareController {
         return myshareRepository.updateTimesOfSave(id,cnt);
     }
 
-    @GetMapping("updateTimesOfDownload/{id}")
+    @GetMapping("/updateTimesOfDownload/{id}")
     public int updateTimesOfDownload(@PathVariable("id") long id) {
         //在原来的基础上加“1”
         long cnt=myshareRepository.findById(id).getTimesOfDownload();
@@ -126,12 +213,16 @@ public class MyshareController {
         return myshareRepository.updateTimesOfDownload(id,cnt);
     }
 
-    @GetMapping("/count")
-    public int count() {
-        return myshareRepository.count();
-    }
 
-    //随机生成提取码，4位字母数字组成
+
+
+    /*
+     * 功能描述 随机生成4位字母数字组成的提取码
+     * @author linxinying
+     * @date 2020/3/19 21:55
+     * @param 无
+     * @return java.lang.String
+     */
     public String getCode(){
         Random random=new Random();
         StringBuffer code=new StringBuffer();
@@ -144,7 +235,15 @@ public class MyshareController {
         return code.toString();
     }
 
-    //多文件fid分割
+
+
+    /*
+     * 功能描述 多文件id分割
+     * @author linxinying
+     * @date 2020/3/19 21:54
+     * @param ids ID数组
+     * @return java.lang.String[]
+     */
     public String[] splitIds(String ids){
         String[] strs=ids.split(",");
         return strs;

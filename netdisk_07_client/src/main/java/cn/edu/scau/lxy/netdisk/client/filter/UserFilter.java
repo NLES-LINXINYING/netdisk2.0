@@ -1,3 +1,4 @@
+/*
 package cn.edu.scau.lxy.netdisk.client.filter;
 
 import cn.edu.scau.lxy.netdisk.client.entity.User;
@@ -11,18 +12,20 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+*/
 /*
- * 功能描述: 过滤器（已作废）
+ * 功能描述: 过滤器（已作废，无法进行鉴权）
  * @author linxinying
  * @date 2020/3/16 20:22
- */
+ *//*
+
 @Component
-@WebFilter(urlPatterns = {"/homepage"},filterName = "userFilter")
+@WebFilter(urlPatterns = {"/redirect/**"},filterName = "userFilter")
 @ServletComponentScan
 public class UserFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("过滤器被初始化了");
+        //System.out.println("过滤器被初始化了");
     }
 
     @Override
@@ -40,6 +43,7 @@ public class UserFilter implements Filter {
 
     @Override
     public void destroy() {
-        System.out.println("过滤器被销毁了");
+        //System.out.println("过滤器被销毁了");
     }
 }
+*/

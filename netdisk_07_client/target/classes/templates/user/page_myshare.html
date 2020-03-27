@@ -11,19 +11,20 @@
     <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
 
     <!--引用部分代码，便于html和js分开-->
-    <script type="text/javascript" th:src="@{/js/upload.js}"></script>
-    <script type="text/javascript" th:src="@{/js/logout.js}"></script>
-    <script type="text/javascript" th:src="@{/js/capacity.js}"></script>
-    <script type="text/javascript" th:src="@{/js/download.js}"></script>
-    <script type="text/javascript" th:src="@{/js/timeformat.js}"></script>
-    <script type="text/javascript" th:src="@{/js/share.js}"></script>
-    <script type="text/javascript" th:src="@{/js/copyto.js}"></script>
-    <script type="text/javascript" th:src="@{/js/moveto.js}"></script>
-    <script type="text/javascript" th:src="@{/js/sizeformat.js}"></script>
-    <script type="text/javascript" th:src="@{/js/delete.js}"></script>
-    <script type="text/javascript" th:src="@{/js/rename.js}"></script>
-    <script type="text/javascript" th:src="@{/js/folder_click.js}"></script>
-    <script type="text/javascript" th:src="@{/js/findName.js}"></script>
+    <script type="text/javascript" th:src="@{/js/signInAndSignUp/logout.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/header/PageInit.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/findName.js}"></script>
+    <script type="text/javascript" th:src="@{/js/cookie/token.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/timeformat.js}"></script>
+
+    <cite id="uid" hidden></cite>
+    <cite id="path1" hidden></cite>  <!--当前用户根目录-->
+
+    <style>
+        .layui-table-view {
+            margin-top: 0;
+        }
+    </style>
 </head>
 
 
@@ -36,13 +37,7 @@
             <li class="layui-nav-item">
                 <a href="#2">
                     <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
-                    <cite th:text="${session.name}" id="username1"></cite>
-                    <cite th:text="${session.id}" id="uid1" hidden></cite>
-                    <cite th:text="${session.usedMemory}" id="usedMemory1" hidden></cite>
-                    <cite th:text="${session.totalMemory}" id="totalMemory1" hidden></cite>
-                    <cite th:text="${session.syspath}" id="path1" hidden></cite>
-                    <cite th:text="${session.curpath}" id="path2" hidden></cite>
-                    <cite th:text="${session.page}" id="page1" hidden></cite>
+                    <cite id="username"></cite>
                 </a>
                 <dl class="layui-nav-child">
                     <dd><a href="/redirect/user/personalCenter">个人资料</a></dd>
@@ -118,6 +113,22 @@
 
 
         <script type="text/javascript">
+            var token="Bearer "+getCookie()
+            var uid=""
+            $.ajax({
+                url: 'http://localhost:8763/user/user/getUserInfo',
+                type: 'get',
+                headers: {Authorization: token},
+                dataType: 'json',
+                async: false,
+                data: {},
+                success: function (result) {
+                    uid = result['data']['id']
+                },
+                error: function (msg) {
+                    layer.msg("请求失败", {time: 800})
+                }
+            })
 
             //JavaScript代码区域
             layui.use('element', function () {
@@ -129,10 +140,9 @@
 
                 table.render({
                     elem: '#file'
-                    , url: '/myshare/findAll'
-                    , where: {
-                        uid: 1
-                    }
+                    , url: 'http://localhost:8763/file/myshare/findAll?uid='+uid
+                    , method: 'get'
+                    , headers: {Authorization: token}
                     , height: 'full-43'
                     , skin: 'nob' //无边框
                     , even: true
@@ -189,8 +199,10 @@
         <script type="text/javascript">
             //取消分享
             function notshare() {
+                var token="Bearer "+getCookie()
                 var data = layui.table.checkStatus('ftable').data
                 var length = data.length
+
 
                 if(length==0){
                     layer.msg("请选择文件",{time:1000})
@@ -207,8 +219,9 @@
                             btn:["确认","取消"],
                             btn1:function (index) {
                                 $.ajax({
-                                    url: '/myshare/delete',
-                                    type: 'post',
+                                    url: 'http://localhost:8763/file/myshare/delete',
+                                    type: 'get',
+                                    headers: {Authorization: token},
                                     data: {
                                         mids:mids.toString()
                                     },

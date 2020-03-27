@@ -11,28 +11,32 @@
     <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
 
     <!--引用部分代码，便于html和js分开-->
-    <script type="text/javascript" th:src="@{/js/upload.js}"></script>
-    <script type="text/javascript" th:src="@{/js/logout.js}"></script>
-    <script type="text/javascript" th:src="@{/js/capacity.js}"></script>
-    <script type="text/javascript" th:src="@{/js/download.js}"></script>
-    <script type="text/javascript" th:src="@{/js/timeformat.js}"></script>
-    <script type="text/javascript" th:src="@{/js/share.js}"></script>
-    <script type="text/javascript" th:src="@{/js/copyto.js}"></script>
-    <script type="text/javascript" th:src="@{/js/moveto.js}"></script>
-    <script type="text/javascript" th:src="@{/js/sizeformat.js}"></script>
-    <script type="text/javascript" th:src="@{/js/delete.js}"></script>
-    <script type="text/javascript" th:src="@{/js/rename.js}"></script>
-    <script type="text/javascript" th:src="@{/js/folder_click.js}"></script>
-    <script type="text/javascript" th:src="@{/js/folder_create.js}"></script>
-    <script type="text/javascript" th:src="@{/js/fname_chg_color.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/upload.js}"></script>
+    <script type="text/javascript" th:src="@{/js/signInAndSignUp/logout.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/download.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/timeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/share.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/copyto.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/moveto.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/sizeformat.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/delete.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/rename.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/user/all_updateByPath.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/folder_create.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/fname_chg_color.js}"></script>
+    <script type="text/javascript" th:src="@{/js/url/urlDecode.js}"></script>
+    <script type="text/javascript" th:src="@{/js/cookie/path.js}"></script>
+    <script type="text/javascript" th:src="@{/js/cookie/token.js}"></script>
+    <script type="text/javascript" th:src="@{/js/user/header/getUserInfo.js}"></script>
 
+    <cite id="uid" hidden></cite>
+    <cite id="path1" hidden></cite>  <!--当前用户根目录-->
 
-    <cite th:text="${session.id}" id="uid1" hidden></cite>
-    <cite th:text="${session.usedMemory}" id="usedMemory1" hidden></cite>
-    <cite th:text="${session.totalMemory}" id="totalMemory1" hidden></cite>
-    <cite th:text="${session.syspath}" id="path1" hidden></cite>
-    <cite th:text="${session.curpath}" id="path2" hidden></cite>
-    <cite th:text="${session.page}" id="page1" hidden></cite>
+    <style>
+        .layui-table-view {
+            margin-top: 0;
+        }
+    </style>
 </head>
 
 
@@ -45,7 +49,7 @@
             <li class="layui-nav-item">
                 <a href="#2">
                     <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
-                    <cite th:text="${session.name}" id="username1"></cite>
+                    <cite id="username"></cite>
                 </a>
                 <dl class="layui-nav-child">
                     <dd><a href="/redirect/user/personalCenter">个人资料</a></dd>
@@ -165,18 +169,16 @@
                     //动态表格
                     layui.use('table', function () {
                         var table = layui.table;
-                        var uid = document.getElementById("uid1").innerText;
-                        var path = encodeURIComponent(document.getElementById("path2").innerText)
-                        console.log(path)
+
+                        var uid = document.getElementById("uid").innerText;
+                        var path = getPath()
+                        var token="Bearer "+getCookie()
 
                         table.render({
                             elem: '#file'
-                            , url: '/all/findByPath' //数据接口
-                            , method: 'post'
-                            , where: {
-                                uid: uid,
-                                path: path
-                            }
+                            , url: 'http://localhost:8763/file/all/findByPath?uid='+uid+"&path="+path //数据接口
+                            , method: 'get'
+                            , headers: {Authorization: token}
                             , height: 'full-120'
                             , skin: 'nob' //无边框
                             , size: 'lg'
@@ -219,16 +221,12 @@
                             //搜索框
                             reload1: function () {
                                 var name = document.getElementById("search1").value;
-                                console.log(name)
-                                console.log(uid)
 
                                 //执行重载
                                 table.reload('ftable', {
-                                    url: '/search/searchByName'
-                                    , where: {
-                                        uid: uid,
-                                        name: name
-                                    }
+                                    url: 'http://localhost:8763/file/all/findByName?uid='+uid+"&name="+name
+                                    , method: 'get'
+                                    , headers: {Authorization: token}
                                 });
                             },
 
@@ -236,43 +234,27 @@
                             reload2: function () {
                                 var syspath = document.getElementById("path1").innerText
 
-                                var path = document.getElementById("path2").innerText
+                                var path = getPath()
                                 //不是根目录才可以
                                 if (syspath != path) {
-                                    //console.log("back"+path)
                                     var strs = path.split('/')
-                                    //console.log(strs)
                                     var curpath = ""
                                     for (var i = 0; i < strs.length - 2; i++) {
                                         curpath += strs[i] + '/'
                                     }
-                                    //更新当前路径
-                                    document.getElementById("path2").innerText = curpath
-                                    //console.log(curpath)
-                                    //更新session记录的路径
-                                    $.ajax({
-                                        type: "post",
-                                        url: "/user/chgPath",
-                                        data: {
-                                            path: curpath
-                                        },
-                                        success: function () {
-                                        },
-                                        error: function () {
-                                            alert("请求失败!");
-                                        }
-                                    })
-                                    //更新，获取最新的session
+
+                                    //更新cookie中当前路径
+                                    setPath(curpath)
+
+                                    //更新，获取最新的path
                                     window.location.reload()
 
 
                                     //执行重载
                                     table.reload('ftable', {
-                                        url: '/all/findByPath'
-                                        , where: {
-                                            uid: uid,
-                                            path: curpath
-                                        }
+                                        url: 'http://localhost:8763/file/all/findByPath?uid='+uid+"&path="+curpath
+                                        , method: 'get'
+                                        , headers: {Authorization: token}
                                     });
                                 } else {
                                     layer.msg("当前为根目录", {time: 500})
@@ -357,6 +339,8 @@
             <p>{{ d.modifyTime }}</p>
         </script>
 
+
+        <!--文件搜索框回车监听事件-->
         <script type="text/javascript">
             //文件搜索框回车监听事件
             function enter1(frm,event) {

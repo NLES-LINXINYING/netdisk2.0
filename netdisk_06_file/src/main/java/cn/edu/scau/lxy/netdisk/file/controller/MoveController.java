@@ -1,5 +1,7 @@
 package cn.edu.scau.lxy.netdisk.file.controller;
 
+import cn.edu.scau.lxy.netdisk.common.entity.SingleResult;
+import cn.edu.scau.lxy.netdisk.common.entity.StatusCode;
 import cn.edu.scau.lxy.netdisk.file.repository.FileRepository;
 import cn.edu.scau.lxy.netdisk.file.repository.FolderRepository;
 import cn.edu.scau.lxy.netdisk.file.entity.File;
@@ -9,11 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.IOException;
 
+
 @RestController
-@RequestMapping("/move")
+@RequestMapping("")
 public class MoveController {
 
     @Autowired
@@ -21,9 +23,18 @@ public class MoveController {
     @Autowired
     private FileRepository fileRepository;
 
-    @PostMapping("movedemo")
-    public void move(@RequestParam("ffids") String ffids,@RequestParam("fids") String fids,@RequestParam("path") String path) throws IOException {
-        System.out.println(path);
+    /*
+     * 功能描述 文件或文件夹移动，支持多文件多文件夹同时移动
+     * @author linxinying
+     * @date 2020/3/20 8:59
+     * @param ffids
+     * @param fids
+     * @param path 要移动到的目录
+     * @return SingleResult
+     */
+    @PostMapping("/move")
+    public SingleResult move(@RequestParam("ffids") String ffids, @RequestParam("fids") String fids, @RequestParam("path") String path) throws IOException {
+        //System.out.println(path);
         Folder folder=new Folder();
         File file=new File();
 
@@ -32,13 +43,13 @@ public class MoveController {
             long[] ffidarr=new long[ffidstrs.length];
             for(int i=0;i<ffidstrs.length;i++){
                 ffidarr[i]=Long.parseLong(ffidstrs[i]);
-                System.out.println(ffidarr[i]);
+                //System.out.println(ffidarr[i]);
 
                 folder=folderRepository.findById(ffidarr[i]);
                 java.io.File src=new java.io.File(folder.getPath()+folder.getName());
                 moveFile(src,path);
                 src.renameTo(new java.io.File(path+src.getName()));
-                System.out.println(path+src.getName());
+                //System.out.println(path+src.getName());
             }
         }
 
@@ -47,14 +58,16 @@ public class MoveController {
             long[] fidarr=new long[fidstrs.length];
             for(int i=0;i<fidstrs.length;i++){
                 fidarr[i]=Long.parseLong(fidstrs[i]);
-                System.out.println(fidarr[i]);
+                //System.out.println(fidarr[i]);
 
                 file=fileRepository.findById(fidarr[i]);
                 java.io.File src=new java.io.File(file.getPath()+file.getName());
-                System.out.println(file.getName());
+                //System.out.println(file.getName());
                 moveFile(src,path);
             }
         }
+
+        return new SingleResult(StatusCode.OK,"移动成功",1,null);
     }
 
 
@@ -76,7 +89,7 @@ public class MoveController {
 
             //数据库删除
             Folder folderdata=folderRepository.findByNameAndPath(source.getName(),replace(source.getParent())+"/");
-            System.out.println(replace(source.getParent())+"/"+source.getName());
+            //System.out.println(replace(source.getParent())+"/"+source.getName());
             folderRepository.deleteById(folderdata.getId());
 
             //数据库插入
@@ -99,7 +112,7 @@ public class MoveController {
 
             //数据库删除
             File filedata=fileRepository.findByNameAndPath(source.getName(),replace(source.getParent())+"/");
-            System.out.println(source.getName()+" "+replace(source.getParent())+"/");
+            //System.out.println(source.getName()+" "+replace(source.getParent())+"/");
             fileRepository.deleteById(filedata.getId());
 
             //插入新记录

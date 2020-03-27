@@ -42,4 +42,7 @@
         select count(id) from folder
     </select>
 
+    <select id="countByUid" resultType="int">
+        select count(id) from folder where uid=#{uid}
+    </select>
 </mapper>

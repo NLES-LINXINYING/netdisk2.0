@@ -1,5 +1,8 @@
 package cn.edu.scau.lxy.netdisk.file.controller;
 
+import cn.edu.scau.lxy.netdisk.common.entity.MultiResult;
+import cn.edu.scau.lxy.netdisk.common.entity.SingleResult;
+import cn.edu.scau.lxy.netdisk.common.entity.StatusCode;
 import cn.edu.scau.lxy.netdisk.file.repository.FileRepository;
 import cn.edu.scau.lxy.netdisk.file.repository.FolderRepository;
 import cn.edu.scau.lxy.netdisk.file.repository.RecyclebinRepository;
@@ -24,13 +27,31 @@ public class RecyclebinController {
     private RecyclebinRepository recyclebinRepository;
 
 
+
+    /*
+     * 功能描述 根据用户ID查询所有
+    * @author linxinying
+     * @date 2020/3/21 15:32
+     * @param uid
+     * @return java.util.List<cn.edu.scau.lxy.netdisk.file.entity.Recyclebin>
+     */
     @GetMapping("findAll")
-    public List<Recyclebin> findAll(@RequestParam("uid") long uid) {
-        return recyclebinRepository.findAll(uid);
+    public MultiResult findAll(@RequestParam("uid") long uid) {
+        List<Object> list= recyclebinRepository.findAll(uid);
+        return new MultiResult(StatusCode.OK,"查询成功",list.size(),list);
     }
 
+
+
+    /*
+     * 功能描述 根据回收站资源ID彻底删除资源，支持多文件
+     * @author linxinying
+     * @date 2020/3/21 15:33
+     * @param rids
+     * @return void
+     */
     @PostMapping("delete")
-    public void delete(@RequestParam("rids") String rids) throws IOException {
+    public SingleResult delete(@RequestParam("rids") String rids) throws IOException {
         Recyclebin recyclebin=new Recyclebin();
         Folder folder=new Folder();
         File file=new File();
@@ -55,10 +76,21 @@ public class RecyclebinController {
                 deleteFile(file1);
             }
         }
+
+        return new SingleResult(StatusCode.OK,"删除成功",1,null);
     }
 
+
+
+    /*
+     * 功能描述 还原回收站文件，支持多文件
+     * @author linxinying
+     * @date 2020/3/21 15:38
+     * @param rids
+     * @return void
+     */
     @PostMapping("revert")
-    public void revert(@RequestParam("rids") String rids) throws IOException {
+    public SingleResult revert(@RequestParam("rids") String rids) throws IOException {
         Recyclebin recyclebin=new Recyclebin();
         Folder folder=new Folder();
         File file=new File();
@@ -85,6 +117,8 @@ public class RecyclebinController {
                 file1.renameTo(new java.io.File(recyclebin.getOldPath()+file1.getName()));
             }
         }
+
+        return new SingleResult(StatusCode.OK,"还原成功",1,null);
     }
 
 

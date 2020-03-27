@@ -7,7 +7,6 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.RequestPath;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -26,31 +25,33 @@ public class TokenFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
         //让部分请求跳过该路由器
-        String url=exchange.getRequest().getURI().toString();
-        if(url.startsWith("http://localhost:8763/user/user/login")||url.startsWith("http://localhost:8763/user/user/register")){
+        String url = exchange.getRequest().getURI().toString();
+        if (url.startsWith("http://localhost:8763/user/user/login")
+                || url.startsWith("http://localhost:8763/user/user/register")
+                || url.startsWith("http://localhost:8763/client/login")) {
             return chain.filter(exchange);
         }
 
 
-        String token=exchange.getRequest().getHeaders().getFirst("Authorization");
-        if(token==null || token.isEmpty()){
-            ServerHttpResponse response=exchange.getResponse();
-            Map<String,Object> responseData=new HashMap<>();
-            responseData.put("code",401);
-            responseData.put("message","非法请求");
-            responseData.put("cause","Token is empty");
+        String token = exchange.getRequest().getHeaders().getFirst("Authorization");
+        if (token == null || token.isEmpty()) {
+            ServerHttpResponse response = exchange.getResponse();
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("code", 401);
+            responseData.put("message", "非法请求");
+            responseData.put("cause", "Token is empty");
 
             try {
                 //将信息转换为JSON
-                ObjectMapper objectMapper=new ObjectMapper();
-                byte[] data=objectMapper.writeValueAsBytes(responseData);
+                ObjectMapper objectMapper = new ObjectMapper();
+                byte[] data = objectMapper.writeValueAsBytes(responseData);
 
                 //输出错误信息到页面
-                DataBuffer buffer=response.bufferFactory().wrap(data);
+                DataBuffer buffer = response.bufferFactory().wrap(data);
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
-                response.getHeaders().add("Content-Type","application/json;charset=UTF-8");
+                response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
                 return response.writeWith(Mono.just(buffer));
-            }catch (JsonProcessingException e){
+            } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
         }
