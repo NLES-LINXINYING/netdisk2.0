@@ -13,6 +13,7 @@
     <script type="text/javascript" th:src="@{http://localhost:8040/myjs/FirstInit.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/cookie/token.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/signInAndSignUp/logout.js}"></script>
 
 
     <style>
@@ -94,7 +95,7 @@
                 <li style="position:relative;margin-top: 20px;margin-bottom: 20px;">
                     <a href="http://localhost:8040/redirect/user2/page_personalCenter">
                         <div class="layui-inline">
-                            <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;">
+                            <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;" id="mypicture">
                         </div>
                         <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
                             <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
@@ -197,7 +198,7 @@
 
                 <li class="layui-nav-item">
                     <button type="button" class="layui-btn layui-btn-danger layui-btn-radius"
-                            style="position: relative;">
+                            style="position: relative;" onclick="logout()">
                         <i class="fa fa-power-off" style="font-size: 18px; color: white;"></i>
                         <span style="margin-left: 20px;">退出登录</span>
                     </button>
@@ -233,7 +234,7 @@
                 </div>
                 <div style="float: right;position:relative;margin-right: 20px;top: 50%;margin-top: -18px;text-align: right;">
                     <p style="font-size: 10px;">文件夹个数</p>
-                    <p id="numOfFolder" style="font-size: 18px;font-weight: bold;">1000</p>
+                    <p id="numOfFolder" style="font-size: 18px;font-weight: bold;">0</p>
                 </div>
             </div>
 
@@ -244,7 +245,7 @@
                 </div>
                 <div style="float: right;position:relative;margin-right: 20px;top: 50%;margin-top: -18px;text-align: right;">
                     <p style="font-size: 10px;">文件个数</p>
-                    <p id="numOfFile" style="font-size: 18px;font-weight: bold;">1000</p>
+                    <p id="numOfFile" style="font-size: 18px;font-weight: bold;">0</p>
                 </div>
             </div>
         </div>
@@ -272,8 +273,12 @@
     //JavaScript代码区域
     layui.use('element', function () {
         var element = layui.element;
-
     });
+
+    window.onload=function () {
+        pageInit()
+        firstInit()
+    }
 </script>
 </body>
 </html>

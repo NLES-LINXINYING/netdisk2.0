@@ -24,6 +24,8 @@
     <script type="text/javascript" th:src="@{http://localhost:8040/js/user/delete.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/user/download.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/user/share.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/findName.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/revert.js}"></script>
 
 
     <style>
@@ -116,13 +118,15 @@
                 </li>
 
                 <li style="position:relative;margin-top: 20px;margin-bottom: 20px;">
-                    <div class="layui-inline">
-                        <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;">
-                    </div>
-                    <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
-                        <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
-                        <p id="userroles" style="font-size: 10px;">用户角色</p>
-                    </div>
+                    <a href="http://localhost:8040/redirect/user2/page_personalCenter">
+                        <div class="layui-inline">
+                            <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;" id="mypicture">
+                        </div>
+                        <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
+                            <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
+                            <p id="userroles" style="font-size: 10px;">用户角色</p>
+                        </div>
+                    </a>
                 </li>
 
                 <li class="layui-nav-item">
@@ -284,30 +288,29 @@
                         , size: 'lg'
                         , cols: [
                             [ //表头
-                                {width: '5%'},
-                                {field:'fid',width: '6%', templet: '#fileicon'},
+                                {width: '2%'},
+                                {width: '6%', templet: '#fileicon'},
                                 {
-                                    field: 'fid',
                                     title: '文件名',
-                                    width: '24%',
+                                    width: '21%',
                                     unresize: 'true',
                                     templet: '#filename'
                                 },
                                 {
                                     field: 'timeOfDelete',
                                     title: '删除时间',
-                                    width: '20%',
+                                    width: '24%',
                                     unresize: 'true',
-                                    templet: '#timeformat'
+                                    templet: '#timeformat1'
                                 },
                                 {
                                     field: 'timeOfEffective',
                                     title: '有效时间',
-                                    width: '20%',
+                                    width: '24%',
                                     unresize: 'true',
                                     templet: '#timeformat2'
                                 },
-                                {fixed: 'right', title: '操作', toolbar: '#barDemo', width: '30%'}
+                                {fixed: 'right', title: '操作', toolbar: '#barDemo', width: '20%'}
                             ]
                         ]
                         , id: 'ftable'
@@ -320,9 +323,9 @@
                         console.log(data)
 
                         if (obj.event === 'del') {
-                           layer.msg('彻底删除，待完成')
+                           deletefunc2(data)
                         } else if (obj.event === 'revert') {
-                            layer.msg('还原，待完成')
+                            revertfunc(data)
                         }
                     });
 
@@ -339,12 +342,23 @@
 
             <!--根据文件类型在前面显示图标-->
             <script type="text/html" id="fileicon">
-                <a href="/index">
+                <a>
                     {{# if(d.ffid != 0){ }}
                     <i class="fa fa-folder fa-2x" style="color: yellow;position: relative;top: 10%;">&nbsp;</i>
-                    <a style="color: grey;position: relative;top: 0%;">{{findFFname(d.ffid)}}</a>
                     {{# } else { }}
                     <i class="fa fa-file fa-2x" style="color: #007DDB;position: relative;top: 10%;">&nbsp;</i>
+                    {{# } }}
+                </a>
+            </script>
+
+
+
+            <!--文件名/文件夹名-->
+            <script type="text/html" id="filename">
+                <a>
+                    {{# if(d.ffid != 0){ }}
+                    <a style="color: grey;position: relative;top: 0%;">{{findFFname(d.ffid)}}</a>
+                    {{# } else { }}
                     <a style="color: grey;position: relative;top: 0%;">{{findFname(d.fid)}}</a>
                     {{# } }}
                 </a>
@@ -377,5 +391,17 @@
         © layui.com - 底部固定区域
     </div>
 </div>
+
+
+<script>
+    //JavaScript代码区域
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    window.onload=function () {
+        pageInit();
+    }
+</script>
 </body>
 </html>

@@ -107,7 +107,7 @@
                 <li class="layui-bg-gray" style="position:relative;margin-top: 20px;margin-bottom: 20px;">
                     <a href="http://localhost:8040/redirect/user2/page_personalCenter">
                         <div class="layui-inline">
-                            <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;">
+                            <img class="layui-circle" src="/images/picture.jpg" id="mypicture" width="40px" height="40px;">
                         </div>
                         <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
                             <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
@@ -341,6 +341,7 @@
     window.onload = function initEmailBinding() {
         var token = "Bearer " + getCookie()
 
+        pageInit()
 
         //获取用户手机号，邮箱号，头像
         $.ajax({

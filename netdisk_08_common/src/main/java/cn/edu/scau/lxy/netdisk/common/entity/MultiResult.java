@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MultiResult{
     private int code;
-    private String message;
+    private String msg;
     private int count;
     private List<Object> data;
 }

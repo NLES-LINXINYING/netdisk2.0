@@ -13,9 +13,9 @@ function findFname(fid) {
         data: {
             id: fid
         },
-        success: function (msg) {
-            console.log(msg.name)
-            name += msg.name
+        success: function (result) {
+            console.log(result.data.name)
+            name += result.data.name
         },
         error: function (msg) {
             layer.msg("请求失败", {time: 1000})
@@ -26,7 +26,7 @@ function findFname(fid) {
 
 //根据ffid找文件夹名字
 function findFFname(ffid) {
-    var name
+    var name=""
 
     $.ajax({
         url: 'http://localhost:8763/file/folder/findById',
@@ -37,8 +37,8 @@ function findFFname(ffid) {
         data: {
             id: ffid
         },
-        success: function (msg) {
-            name = msg.name
+        success: function (result) {
+            name += result.data.name
         },
         error: function (msg) {
             layer.msg("请求失败", {time: 1000})

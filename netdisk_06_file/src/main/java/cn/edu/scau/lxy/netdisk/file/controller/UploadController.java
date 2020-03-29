@@ -1,5 +1,6 @@
 package cn.edu.scau.lxy.netdisk.file.controller;
 
+import cn.edu.scau.lxy.netdisk.common.entity.SingleResult;
 import cn.edu.scau.lxy.netdisk.file.repository.FileRepository;
 import cn.edu.scau.lxy.netdisk.file.repository.FolderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class UploadController {
 
     @PostMapping(value = "/uploadFile")
     @ResponseBody
-    public Map<String,Object> uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest request){
+    public Map<String,Object> uploadFile(@RequestParam MultipartFile file, HttpServletRequest request){
         long uid=Long.parseLong(request.getParameter("uid"));
         String uploadDir = request.getParameter("path");
 

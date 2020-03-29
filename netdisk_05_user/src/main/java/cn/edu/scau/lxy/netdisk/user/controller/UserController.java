@@ -9,11 +9,15 @@ import cn.edu.scau.lxy.netdisk.user.repository.UserRepository;
 import cn.edu.scau.lxy.netdisk.common.util.JwtUtil;
 import cn.edu.scau.lxy.netdisk.user.entity.User;
 import io.jsonwebtoken.Claims;
+import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,10 +135,6 @@ public class UserController {
         int result= userRepository.updateEmail(uid,email);
         return new SingleResult(StatusCode.OK,"",1,result);
     }
-
-
-
-
 
 
 
@@ -313,4 +313,90 @@ public class UserController {
     }
 
 
+    /*
+     * 功能描述 修改用户头像
+     * @author linxinying
+     * @date 2020/3/28 10:22
+     * @param file
+     * @param request
+     * @return cn.edu.scau.lxy.netdisk.common.entity.SingleResult
+     */
+    @PostMapping("/updatePicture")
+    public SingleResult updatePicture(@RequestParam MultipartFile file, HttpServletRequest request){
+        String token=request.getHeader("Authorization");
+        token=token.substring(7);
+
+        Claims claims=jwtUtil.parseJWT(token);
+        long uid=Long.parseLong(claims.getId());
+        String uname=claims.getSubject();
+
+
+        //头像保存路径
+        String uploadDir = "D:/upload/"+uname+"/";
+        java.io.File pfile=new java.io.File(uploadDir);
+
+        //判断存储头像的路径是否存在
+        if(!pfile.exists()){
+            //不存在则创建
+            pfile.mkdirs();
+        }
+
+        String fname=file.getOriginalFilename();
+        String suffix=fname.substring(fname.lastIndexOf('.'));
+        //创建文件
+        java.io.File cfile=new java.io.File(pfile,uname+suffix);
+
+        try {
+            //使用此方法必须要绝对路径且文件夹必须存在，否则报错
+            file.transferTo(cfile);
+
+            userRepository.updatePicture(uid,uploadDir+uname+suffix);
+
+            return new SingleResult(StatusCode.OK,"上传头像成功",1,null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new SingleResult(StatusCode.ERROR,"上传头像失败",0,null);
+        }
+    }
+
+
+
+    /*
+     * 功能描述 请求用户头像,默认跳过token认证，因为img,无法携带请求头
+     * @author linxinying
+     * @date 2020/3/28 12:59
+     * @param request
+     * @param response
+     * @return void
+     */
+    @GetMapping("/getPicture")
+    public void getPicture(HttpServletRequest request, HttpServletResponse response)  {
+        long uid=Long.parseLong(request.getParameter("uid"));
+
+        String imgPath=userRepository.findById(uid).getPicture();
+
+        InputStream is=null;
+        OutputStream os=null;
+
+        try{
+            is=new FileInputStream(imgPath);
+            os=response.getOutputStream();
+
+            int count = 0;
+            byte[] buffer = new byte[1024 * 8];
+            while ((count = is.read(buffer)) != -1) {
+                os.write(buffer, 0, count);
+                os.flush();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                is.close();
+                os.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
 }

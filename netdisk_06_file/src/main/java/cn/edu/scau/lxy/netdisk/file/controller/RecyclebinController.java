@@ -51,7 +51,7 @@ public class RecyclebinController {
      * @return void
      */
     @PostMapping("delete")
-    public SingleResult delete(@RequestParam("rids") String rids) throws IOException {
+    public SingleResult delete(@RequestParam String rids) throws IOException {
         Recyclebin recyclebin=new Recyclebin();
         Folder folder=new Folder();
         File file=new File();
@@ -90,7 +90,7 @@ public class RecyclebinController {
      * @return void
      */
     @PostMapping("revert")
-    public SingleResult revert(@RequestParam("rids") String rids) throws IOException {
+    public SingleResult revert(@RequestParam String rids) throws IOException {
         Recyclebin recyclebin=new Recyclebin();
         Folder folder=new Folder();
         File file=new File();

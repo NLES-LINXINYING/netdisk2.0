@@ -66,9 +66,19 @@ public class FolderController {
         return folderRepository.deleteById(id);
     }
 
+
+
+    /*
+     * 功能描述  根据文件夹ID查询文件
+     * @author linxinying
+     * @date 2020/3/29 9:13
+     * @param id
+     * @return cn.edu.scau.lxy.netdisk.file.entity.Folder
+     */
     @GetMapping("/findById")
-    public Folder findById(@RequestParam("id") long id){
-        return folderRepository.findById(id);
+    public SingleResult findById(@RequestParam("id") long id){
+        Folder folder = folderRepository.findById(id);
+        return new SingleResult(StatusCode.OK,"查询成功",1,folder);
     }
 
 

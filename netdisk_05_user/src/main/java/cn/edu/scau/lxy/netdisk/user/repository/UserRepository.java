@@ -12,6 +12,8 @@ public interface UserRepository {
 
     public int deleteByName(String name);
 
+    public User findById(long id);
+
     public User findByName(String name);
 
     public User findByNameAndPassword(String name,String password);
@@ -27,6 +29,8 @@ public interface UserRepository {
     public int updatePhone(long id,String phone);
 
     public int updateEmail(long id,String email);
+
+    public int updatePicture(long id,String picture);
 
     public int count();
 }

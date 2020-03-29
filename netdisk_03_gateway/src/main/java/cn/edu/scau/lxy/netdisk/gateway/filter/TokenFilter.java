@@ -28,7 +28,8 @@ public class TokenFilter implements GlobalFilter, Ordered {
         String url = exchange.getRequest().getURI().toString();
         if (url.startsWith("http://localhost:8763/user/user/login")
                 || url.startsWith("http://localhost:8763/user/user/register")
-                || url.startsWith("http://localhost:8763/client/login")) {
+                || url.startsWith("http://localhost:8763/client/login")
+                || url.startsWith("http://localhost:8763/user/user/getPicture")) {
             return chain.filter(exchange);
         }
 

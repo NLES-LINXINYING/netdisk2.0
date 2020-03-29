@@ -22,7 +22,7 @@
             margin-top: 0;
         }
 
-        .layui-table-header{
+        .layui-table-header {
             display: none;
         }
 
@@ -102,13 +102,16 @@
                 </li>
 
                 <li style="position:relative;margin-top: 20px;margin-bottom: 20px;">
-                    <div class="layui-inline">
-                        <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;">
-                    </div>
-                    <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
-                        <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
-                        <p id="userroles" style="font-size: 10px;">用户角色</p>
-                    </div>
+                    <a href="http://localhost:8040/redirect/user2/page_personalCenter">
+                        <div class="layui-inline">
+                            <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;"
+                                 id="mypicture">
+                        </div>
+                        <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
+                            <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
+                            <p id="userroles" style="font-size: 10px;">用户角色</p>
+                        </div>
+                    </a>
                 </li>
 
                 <li class="layui-nav-item">
@@ -260,18 +263,33 @@
                     <p style="margin-left: 10px;">/</p>
                 </div>
 
-                <div style="width: 100%;height: auto;">
+                <div class="layui-upload" style="width: 100%;height: 100%;">
                     <!--   四个按钮  -->
                     <div style="margin-left: 20px;">
-                        <button class="layui-inline layui-btn layui-btn-normal">选择文件</button>
-                        <button class="layui-inline layui-btn layui-btn-danger">删除文件</button>
-                        <button class="layui-inline layui-btn layui-btn-normal">上传文件</button>
-                        <button class="layui-inline layui-btn layui-btn-danger">终止上传</button>
+                        <button class="layui-inline layui-btn layui-btn-normal" id="select">选择文件</button>
+                        <button class="layui-inline layui-btn layui-btn-normal" id="upload" style="margin-left: 10px;">上传文件</button>
+                        <button class="layui-inline layui-btn layui-btn-danger" id="cancel">终止上传</button>
                     </div>
 
                     <!--    上传列表    -->
-                    <div>
-
+                    <div class="layui-upload-list" style="overflow-y: auto;height: 310px;">
+                        <table class="layui-table" lay-skin="line">
+                            <!--<thead>
+                            <tr>
+                                <th>文件名</th>
+                                <th>大小</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>-->
+                            <colgroup>
+                                <col width="35%">
+                                <col width="15%">
+                                <col width="30%">
+                                <COL width="20%">
+                            </colgroup>
+                            <tbody id="uploadList"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -288,7 +306,8 @@
 
                     <!--  新建文件夹按钮    -->
                     <div style="width: 100%;height: 50px;">
-                        <button type="button" class="layui-btn layui-btn-primary" style="float: right;margin-right: 30px;" onclick="newFolder()">
+                        <button type="button" class="layui-btn layui-btn-primary"
+                                style="float: right;margin-right: 30px;" onclick="newFolder()">
                             <i class="fa fa-plus" style="margin-right: 5px;"></i>新建文件夹
                         </button>
                     </div>
@@ -312,7 +331,7 @@
                             , skin: 'nob' //无边框
                             , cols: [
                                 [
-                                    {width:'15%',templet:'#fileicon'},
+                                    {width: '15%', templet: '#fileicon'},
                                     {field: 'name', width: '80%', templet: '#filename'}
                                 ]
                             ]
@@ -324,40 +343,15 @@
                 <!--根据文件类型在前面显示图标-->
                 <script type="text/html" id="fileicon">
                     <!--文件夹-->
-                    {{# if(d.size==undefined) { }}
                     <i class="fa fa-folder fa-2x" style="color: yellow;position: relative;top: 10%;">&nbsp;</i>
-
-                    <!--  文件  -->
-                    {{# } else { }}
-                    {{# if(d.type=="1") { }}
-                    <i class="fa fa-file-image-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                    {{# } else if(d.type=="2") { }}
-                    <i class="fa fa-file-word-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                    {{# } else if(d.type=="3") { }}
-                    <i class="fa fa-file-video-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                    {{# } else if(d.type=="4") { }}
-                    <i class="fa fa-tumblr-square fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                    {{# } else if(d.type=="5") { }}
-                    <i class="fa fa-file-audio-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                    {{# } else { }}
-                    <i class="fa fa-file fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                    {{# } }}
-                    {{# } }}
                 </script>
 
 
                 <!--文件名变色，文件夹点击-->
                 <script type="text/html" id="filename">
                     <!--文件夹-->
-                    {{# if(d.size==undefined) { }}
                     <a id={{d.id}} style="color: grey;position: relative;top: 0%;" onmouseenter="mouseenter('{{d.id}}')"
                        onmouseleave="mouseleave('{{d.id}}')" onclick="clickfolder('{{d.name}}')">{{ d.name }}</a>
-
-                    <!--  文件  -->
-                    {{# } else { }}
-                    <a id={{d.id}} style="color: grey;position: relative;top: 0%;" onmouseenter="mouseenter('{{d.id}}')"
-                       onmouseleave="mouseleave('{{d.id}}')">{{ d.name }}</a>
-                    {{# } }}
                 </script>
 
 
@@ -392,8 +386,111 @@
     //JavaScript代码区域
     layui.use('element', function () {
         var element = layui.element;
-
     });
+
+    window.onload = function () {
+        pageInit();
+    }
+
+
+    //文件上传列表
+    //多文件列表示例
+    layui.use(['upload',['element']], function () {
+        var uid = 1
+        var path = "D:/upload/lxy/"
+        var token = "Bearer "+getCookie()
+
+        var $ = layui.jquery
+            , upload = layui.upload
+            , element = layui.element;
+
+        var thisFileArray=new Array()
+        var thisFileIndex=0
+        var updateResult=[0,0,0] //分别表示总文件数、上传成功数、上传失败数
+
+        var demoListView = $('#uploadList')
+            , uploadListIns = upload.render({
+            elem: '#select'
+            , url: 'http://localhost:8763/file/upload/uploadFile' //改成您自己的上传接口
+            , type: 'post'
+            , headers: {Authorization: token}
+            , data: {
+                uid: uid,
+                path: path
+            }
+            , accept: 'file'
+            , multiple: true
+            , auto: false
+            , bindAction: '#upload'
+            , choose: function (obj) {
+                var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //读取本地文件
+                obj.preview(function (index, file, result) {
+                    thisFileArray.push(index)
+                    var tr = $(['<tr id="upload-' + index + '">'
+                        , '<td>' + file.name + '</td>'
+                        , '<td>' + (file.size / 1024).toFixed(2) + 'kb</td>'
+                        // , '<td>等待上传</td>'
+
+                        ,'<td>' +
+                        '<div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="progress_'+index+'">\n' +
+                        '    <div class="layui-progress-bar" lay-percent="0%"><span class="layui-progress-text"></span></div>\n' +
+                        '</div>' +
+                        '</td>'
+
+                        , '<td>'
+                        , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                        , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                        , '</td>'
+                        , '</tr>'].join(''));
+
+                    //单个重传
+                    tr.find('.demo-reload').on('click', function () {
+                        obj.upload(index, file);
+                    });
+
+                    //删除
+                    tr.find('.demo-delete').on('click', function () {
+                        delete files[index]; //删除对应的文件
+                        tr.remove();
+                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                    });
+
+                    demoListView.append(tr);
+                });
+            }
+            , done: function (res, index, upload) {
+
+                if (res.code==0) { //上传成功
+                    //element.progress('demo', (thisFileIndex/thisFileArray.length*100).toFixed(2)+"%"); //可配合 layui 进度条元素使用
+
+                    var tr = demoListView.find('tr#upload-' + index)
+                        , tds = tr.children();
+                    //tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                    tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>'); //清空操作
+                    return delete this.files[index]; //删除文件队列已经上传成功的文件，并不是删除表格里的数据
+                }
+                this.error(index, upload);
+            }
+            , error: function (index, upload) {
+                var tr = demoListView.find('tr#upload-' + index)
+                    , tds = tr.children();
+                //tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+            }
+            , progress: function (n) {
+                var percent=n+'%'
+                console.log(thisFileArray[thisFileIndex])
+                console.log(thisFileArray[thisFileIndex]+"/"+percent);
+                if (n==100) {
+                    element.progress('progress_' + thisFileArray[thisFileIndex] + '', percent); //可配合 layui 进度条元素使用
+                    thisFileIndex++;
+                }else{
+                    element.progress('progress_' + thisFileArray[thisFileIndex] + '', percent); //可配合 layui 进度条元素使用
+                }
+            }
+        });
+    })
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 //初始化页面信息（用户，文件）
-window.onload = function () {
+function firstInit () {
 
     var token = "Bearer " + getCookie()
     var uid=''
@@ -51,7 +51,7 @@ window.onload = function () {
                     clockwise: true,
                     data: [
                         {value: used, name: '已使用'},
-                        {value: total, name: '未使用'}
+                        {value: (total-used).toFixed(2), name: '未使用'}
                     ],
                     emphasis: {
                         itemStyle: {

@@ -1,5 +1,5 @@
 //初始化页面信息（用户，文件）
-window.onload = function () {
+function pageInit() {
 
     var token = "Bearer " + getCookie()
     var uid=''
@@ -25,6 +25,10 @@ window.onload = function () {
             }
             document.getElementById("path1").innerText='D:/upload/'+result['data']['name']+'/'
             document.getElementById("path2").innerText='D:/upload/'+result['data']['name']+'/'
+
+            if(result['data']['picture']!=null){
+                $('#mypicture').attr('src',"http://localhost:8763/user/user/getPicture?uid="+uid);
+            }
         },
         error: function (msg) {
             layer.msg("请求用户信息失败")

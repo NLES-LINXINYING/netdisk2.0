@@ -12,7 +12,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class SingleResult {
     private int code;
-    private String message;
+    private String msg;
     private int count;
     private Object data;
 }

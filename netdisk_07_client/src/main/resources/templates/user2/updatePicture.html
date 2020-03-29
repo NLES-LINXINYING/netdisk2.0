@@ -11,32 +11,22 @@
     <script type="text/javascript" th:src="@{http://localhost:8040/js/echarts.min.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/myjs/PageInit.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/cookie/token.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/cookie/path.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/jquery.min.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/sizeformat.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/timeformat.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/all_updateByPath.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/fname_chg_color.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/folder_create.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/copyto.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/moveto.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/rename.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/delete.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/download.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/share.js}"></script>
 
 
     <style>
-        .layui-table-body {
-            overflow-x: hidden;
+        .pchover {
+            border-color: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            border-width: 2px;
+            border-style: solid;
         }
 
-        .layui-table tbody tr:hover, .layui-table thead tr, .layui-table-click, .layui-table-header, .layui-table-hover, .layui-table-mend, .layui-table-patch, .layui-table-tool, .layui-table-total, .layui-table-total tr, .layui-table[lay-even] tr:nth-child(even) {
-            background-color: white;
-        }
-
-        .layui-table-view {
-            margin-top: 0;
+        .pchover:hover {
+            border-color: #1E9FFF;
+            border-radius: 10px;
+            border-width: 2px;
+            border-style: solid;
         }
 
         .layui-layout-admin .layui-side {
@@ -96,7 +86,6 @@
         }
     </style>
 
-
     <cite id="uid" hidden></cite>
     <cite id="path1" hidden></cite>  <!--当前用户根目录-->
     <cite id="path2" hidden></cite>  <!--当前用户目前所在目录-->
@@ -115,10 +104,10 @@
                     </div>
                 </li>
 
-                <li style="position:relative;margin-top: 20px;margin-bottom: 20px;">
+                <li class="layui-bg-gray" style="position:relative;margin-top: 20px;margin-bottom: 20px;">
                     <a href="http://localhost:8040/redirect/user2/page_personalCenter">
                         <div class="layui-inline">
-                            <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;" id="mypicture">
+                            <img class="layui-circle" src="/images/picture.jpg" id="mypicture" width="40px" height="40px;">
                         </div>
                         <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
                             <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
@@ -151,7 +140,7 @@
                     </a>
                 </li>
 
-                <li class="layui-nav-item layui-nav-itemed">
+                <li class="layui-nav-item">
                     <a href="javascript:;" style="color: #0C0C0C;position: relative;left: 5px;">
                         <i class="fa fa-cubes" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">分类文件</span>
@@ -194,7 +183,7 @@
                                       style="margin-left: 10px;">0</span>
                             </a>
                         </dd>
-                        <dd class="layui-bg-gray">
+                        <dd>
                             <a href="http://localhost:8040/redirect/user2/page_music"
                                style="color: #0C0C0C;position: relative;left: 10px;">
                                 <!--                                <i class="fa fa-file-audio-o" style="font-size: 18px; color: grey;"></i>-->
@@ -246,7 +235,7 @@
     </div>
 
 
-    <div class="layui-body" style="background-color: gainsboro;overflow-y: hidden;">
+    <div class="layui-body" style="background-color: gainsboro;">
 
         <div style="background-color: #1E9FFF;width: 100%;height: 80px;">
             <i class="fa fa-th-large"
@@ -257,152 +246,44 @@
 
         <div style="background-color: white;width: 94%;height: 60px;position: relative;margin-top: -30px;left: 3%;right: 3%;border-radius: 5px;">
             <div style="position: absolute;top: 50%;margin-top: -13px;margin-left: 20px;">
-                <i class="fa fa-file-audio-o" style="font-size: 20px; color: grey;"></i>
-                <span style="margin-left: 10px;font-size: 20px;">我的音频</span>
+                <i class="fa fa-user-circle-o" style="font-size: 20px; color: grey;"></i>
+                <span style="margin-left: 10px;font-size: 20px;">个人中心</span>
             </div>
         </div>
 
 
-        <div style="background-color: white;position:relative;left: 3%;right: 3%;top:20px;width: 94%;height:74%;bottom: 20px;">
+        <div style="position: relative;left: 3%;right: 3%;margin-top: 20px;border-radius: 5px;width: 94%;">
 
-            <table id="file" lay-filter="file"></table>
+            <div class="layui-col-md12">
+                <div class="layui-card" style="border-radius: 10px;">
+                    <div class="layui-card-body">
+                        <div style="width: 100%;height: 40px;">
+                            <p>头像设置</p>
+                        </div>
 
-            <!--表格数据初始化-->
-            <script>
-                //动态表格
-                layui.use('table', function () {
-                    var table = layui.table;
+                        <div class="layui-upload" style="width: 100%;height: 350px;position: relative;left: 50%;margin-top: 20px;margin-left: -100px;">
+                            <div class="layui-upload-list">
+                                <div style="position: relative;background-color: #9F9F9F;width: 200px;height: 200px;">
+                                    <img style="width: 200px;height: 200px;display: block;margin-top: 30px;" id="view">
+                                    <span style="position: absolute;top: 50%;left: 50%;margin-top:-12px;margin-left:-32px;color: white;font-size: 16px;">图片预览</span>
+                                </div>
 
-                    var uid = document.getElementById("uid").innerText;
-                    var token = "Bearer " + getCookie()
-
-                    table.render({
-                        elem: '#file'
-                        , url: 'http://localhost:8763/file/file/findByType?uid=' + uid + "&type=5" //数据接口
-                        , method: 'get'
-                        , headers: {Authorization: token}
-                        , height: 'full-195'
-                        , skin: 'nob' //无边框
-                        , size: 'lg'
-                        , cols: [
-                            [ //表头
-                                {width: '5%'},
-                                {width: '6%', templet: '#fileicon'},
-                                {
-                                    field: 'name',
-                                    title: '文件名',
-                                    width: '24%',
-                                    unresize: 'true',
-                                    templet: '#filename'
-                                },
-                                {
-                                    field: 'size',
-                                    title: '大小',
-                                    width: '15%',
-                                    unresize: 'true',
-                                    templet: '#size'
-                                },
-                                {
-                                    field: 'modifyTime',
-                                    title: '修改日期',
-                                    width: '20%',
-                                    unresize: 'true',
-                                    templet: '#timeformat'
-                                },
-                                {fixed: 'right', title: '操作', toolbar: '#barDemo', width: '30%'}
-                            ]
-                        ]
-                        , id: 'ftable'
-                    });
-
-
-                    //监听行工具事件
-                    table.on('tool(file)', function (obj) {
-                        var data = obj.data;
-                        console.log(data)
-
-                        if (obj.event === 'move') {
-                            moveto(data)
-                        } else if (obj.event === 'copy') {
-                            copyto(data)
-                        } else if (obj.event === 'rename') {
-                            renamefunc(data)
-                        } else if (obj.event === 'del') {
-                            deletefunc(data)
-                        } else if (obj.event === 'download') {
-                            downloaddemo(data)
-                        } else if (obj.event === 'share') {
-                            sharefunc(data)
-                        }
-                    });
-
-                });
-            </script>
-
-
-            <!--行工具事件-->
-            <script type="text/html" id="barDemo">
-                <a class="layui-btn layui-btn-xs" lay-event="share">分享</a>
-                <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-                <a class="layui-btn layui-btn-xs" lay-event="rename">重命名</a>
-            </script>
-
-
-            <!--根据文件类型在前面显示图标-->
-            <script type="text/html" id="fileicon">
-                {{# if(d.type=="1") { }}
-                <i class="fa fa-file-image-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } else if(d.type=="2") { }}
-                <i class="fa fa-file-word-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } else if(d.type=="3") { }}
-                <i class="fa fa-file-video-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } else if(d.type=="4") { }}
-                <i class="fa fa-tumblr-square fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } else if(d.type=="5") { }}
-                <i class="fa fa-file-audio-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } else { }}
-                <i class="fa fa-file fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } }}
-            </script>
-
-
-            <!--文件名变色-->
-            <script type="text/html" id="filename">
-                <a id={{d.id}} style="color: grey;position: relative;top: 0%;" onmouseenter="mouseenter('{{d.id}}')"
-                   onmouseleave="mouseleave('{{d.id}}')">{{ d.name }}</a>
-            </script>
-
-
-            <!--文件大小为空时-->
-            <script type="text/html" id="size">
-                {{# if(d.size==null){ }}
-                <p>{{ d.size='-' }}</p>
-                {{# }else{ }}
-                <p>{{ sizeformat(d.size) }}</p>
-                {{# } }}
-            </script>
-
-
-            <!--时间格式转换-->
-            <script type="text/html" id="timeformat">
-                {{# d.modifyTime = timeformat(d.modifyTime) }}
-                <p>{{ d.modifyTime }}</p>
-            </script>
-
-
-            <!--  文件重命名表单  -->
-            <form class="layui-form" id="renameform" style="display: none;">
-                <div class="layui-form-item" style="margin-top: 20px;margin-left:0px;">
-                    <label class="layui-form-label" style="width: 90px;padding-right: 5px">新名字：</label>
-                    <div class="layui-input-block">
-                        <input type="text" required lay-verify="required" autocomplete="on"
-                               class="layui-input" id="ffname1" style="width:150px">
+                                <div class="layui-upload" style="margin-top: 30px;">
+                                    <button type="button" class="layui-btn layui-btn-primary layui-inline" id="select">选择图片</button>
+                                    <button type="button" class="layui-btn layui-btn-normal" id="upload" style="margin-left: 10px;">保存头像</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </form>
+
+
+            </div>
+
 
         </div>
+
+
     </div>
 
 
@@ -413,14 +294,102 @@
 
 
 <script>
-    //JavaScript代码区域
     layui.use('element', function () {
         var element = layui.element;
     });
 
+    /*//初始化页面信息（用户，文件）
+    window.onload = function PageInit() {
+
+        var token = "Bearer " + getCookie()
+        var uid = ''
+
+        //获取用户名，用户角色
+        $.ajax({
+            url: 'http://localhost:8763/user/user/getUserInfo',
+            type: 'get',
+            headers: {Authorization: token},
+            dataType: 'json',
+            async: false,
+            data: {},
+            success: function (result) {
+                // console.log(result)
+                uid = result['data']['id']
+                document.getElementById("uid").innerText = uid
+                document.getElementById("username").innerText = result['data']['name']
+                document.getElementById("username2").innerText = '你好，' + result['data']['name']
+                if (result['data']['type'] == 2) {
+                    document.getElementById("userroles").innerText = '管理员'
+                } else {
+                    document.getElementById("userroles").innerText = '普通用户'
+                }
+                document.getElementById("path1").innerText = 'D:/upload/' + result['data']['name'] + '/'
+                document.getElementById("path2").innerText = 'D:/upload/' + result['data']['name'] + '/'
+            },
+            error: function (msg) {
+                console.log("请求用户信息失败")
+            }
+        })
+
+
+        //获取各个类别文件个数
+        $.ajax({
+            url: 'http://localhost:8763/file/file/numOfType?uid=' + uid,
+            type: 'get',
+            headers: {Authorization: token},
+            dataType: 'json',
+            async: false,
+            data: {},
+            success: function (result) {
+                document.getElementById("pictureNum").innerText = result['data']['picture']
+                document.getElementById("wordNum").innerText = result['data']['word']
+                document.getElementById("videoNum").innerText = result['data']['video']
+                document.getElementById("torrentNum").innerText = result['data']['torrent']
+                document.getElementById("musicNum").innerText = result['data']['music']
+                document.getElementById("otherNum").innerText = result['data']['other']
+            },
+            error: function (msg) {
+                console.log("请求统计文件各个类别个数失败")
+            }
+        })
+    }*/
+
     window.onload=function () {
         pageInit();
     }
+
+
+    //上传头像
+    layui.use('upload', function () {
+        var $ = layui.jquery
+            , upload = layui.upload;
+
+        var token = "Bearer " + getCookie()
+
+        //选择文件后不自动上传
+        upload.render({
+            elem: '#select'
+            , url: 'http://localhost:8763/user/user/updatePicture' //改成您自己的上传接口
+            , type: 'post'
+            , headers: {Authorization: token}
+            , accept: 'images' //允许上传的文件类型，上传时校验
+            , acceptMime: 'image/*' //文件选择框筛选文件类型
+            , auto: false  //不自动上传
+            , choose: function(obj) { //选择文件后的回调函数
+                obj.preview(function(index, file, result){
+                    $('#view').attr('src', result); //图片链接（base64）
+                });
+            }
+            , before: function(obj){
+                layer.load()
+            }
+            , bindAction: '#upload'
+            , done: function (res) {
+                layer.msg('上传成功')
+                layer.closeAll('loading')
+            }
+        })
+    })
 </script>
 </body>
 </html>

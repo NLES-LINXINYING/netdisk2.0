@@ -8,9 +8,6 @@
     <link rel="stylesheet" th:href="@{http://localhost:8040/layui/css/layui.css}">
     <link rel="stylesheet" th:href="@{http://localhost:8040/font-awesome-4.7.0/css/font-awesome.min.css}">
     <script type="text/javascript" th:src="@{http://localhost:8040/layui/layui.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/js/echarts.min.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/myjs/PageInit.js}"></script>
-    <script type="text/javascript" th:src="@{http://localhost:8040/myjs/FirstInit.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/cookie/token.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/jquery.min.js}"></script>
 
@@ -108,7 +105,7 @@
                 <li class="layui-bg-gray" style="position:relative;margin-top: 20px;margin-bottom: 20px;">
                     <a href="http://localhost:8040/redirect/user2/page_personalCenter">
                         <div class="layui-inline">
-                            <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;">
+                            <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;" id="mypicture">
                         </div>
                         <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
                             <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
@@ -254,12 +251,6 @@
                                         <div id="test1" style="display: block;"></div>
                                         <p style="display: block">信息完整度评分</p>
                                     </div>
-
-                                    <!--<div style="float:right;display: flex;align-items: center;transform: translateY(45%);padding-right: 5%;">
-                                        <button type="button"
-                                                class="layui-btn layui-btn-radius layui-btn-primary">&nbsp;&nbsp;检测&nbsp;&nbsp;
-                                        </button>
-                                    </div>-->
                                 </div>
                             </div>
 
@@ -288,7 +279,7 @@
                                             <p style="color: #B2B2B2;display: block;font-size: 14px;">
                                                 头像设置完成，便于身份验证</p>
                                             <p id="picture1" style="color: #3187ff;display: block;font-size: 14px;padding-top: 2%;">
-                                                已绑定 ></p>
+                                                已设置 ></p>
                                         </div>
                                     </div>
                                 </div>
@@ -345,11 +336,12 @@
         var element = layui.element;
     });
 
-
     window.onload = function initPersonalCenter() {
         var token = "Bearer " + getCookie()
-
         var score = 1  //登陆密码已经设置
+
+        var layer=layui.layer
+        var uid
 
 
         //获取用户手机号，邮箱号，头像
@@ -360,40 +352,75 @@
             dataType: 'json',
             async: false,
             data: {},
-            success: function (msg) {
-                console.log(msg)
-                if (msg['data']['phone'] != null) {
-                    //console.log(msg)
+            success: function (result) {
+                //左侧、头部信息初始化
+                uid=result['data']['id']
+                document.getElementById("uid").innerText=uid
+                document.getElementById("username").innerText=result['data']['name']
+                document.getElementById("username2").innerText='你好，'+result['data']['name']
+                if(result['data']['type']==2){
+                    document.getElementById("userroles").innerText='管理员'
+                }else{
+                    document.getElementById("userroles").innerText='普通用户'
+                }
+                document.getElementById("path1").innerText='D:/upload/'+result['data']['name']+'/'
+                document.getElementById("path2").innerText='D:/upload/'+result['data']['name']+'/'
+
+                //主体信息初始化
+                if (result['data']['phone'] != null) {
                     var reg = /^(\d{3})\d{6}(\d{2})$/
-                    document.getElementById("phone1").innerText = msg['data']['phone'].replace(reg, '$1******$2') + " >"
+                    document.getElementById("phone1").innerText = result['data']['phone'].replace(reg, '$1******$2') + " >"
                     score += 1
                 } else {
                     document.getElementById("phone1").innerText = "去绑定 >"
                 }
 
-                if (msg['data']['email'] != null) {
-                    //console.log(msg)
-                    document.getElementById("email1").innerText = msg['data']['email'].substring(0, 3) + "***" + msg['data']['email'].substr(msg['data']['email'].indexOf("@")) + ">"
+                if (result['data']['email'] != null) {
+                    //console.log(result)
+                    document.getElementById("email1").innerText = result['data']['email'].substring(0, 3) + "***" + result['data']['email'].substr(result['data']['email'].indexOf("@")) + ">"
                     score += 1
                 } else {
                     document.getElementById("email1").innerText = "去绑定 >"
                 }
 
-                if (msg['data']['picture'] != null) {
-                    //console.log(msg)
+                if (result['data']['picture'] != null) {
+                    //console.log(result)
+                   $('#mypicture').attr('src',"http://localhost:8763/user/user/getPicture?uid="+uid);
                     score += 1
                 } else {
                     document.getElementById("picture1").innerText = "去设置 >"
                 }
             },
+            error: function (result) {
+                layer.msg("页面初始化请求失败")
+            }
+        })
+
+
+        //获取各个类别文件个数
+        $.ajax({
+            url: 'http://localhost:8763/file/file/numOfType?uid='+uid,
+            type: 'get',
+            headers: {Authorization: token},
+            dataType: 'json',
+            async: false,
+            success: function (result) {
+                document.getElementById("pictureNum").innerText=result['data']['picture']
+                document.getElementById("wordNum").innerText=result['data']['word']
+                document.getElementById("videoNum").innerText=result['data']['video']
+                document.getElementById("torrentNum").innerText=result['data']['torrent']
+                document.getElementById("musicNum").innerText=result['data']['music']
+                document.getElementById("otherNum").innerText=result['data']['other']
+            },
             error: function (msg) {
-                layer.msg("请求查询手机号失败")
+                layer.msg("请求统计文件各个类别个数失败")
             }
         })
 
 
         //填充分数
         document.getElementById("score1").innerText = (score / 4) * 100
+
 
         //用户信息完整度评分
         layui.use(['rate'], function () {
