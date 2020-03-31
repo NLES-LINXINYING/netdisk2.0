@@ -1,5 +1,6 @@
 //退出登录
 function logout() {
     deleteCookie()
-    window.location="http://localhost:8763/client/login"
+    //deletePath()
+    window.location="http://localhost:8763/netdisk/v1/login"
 }

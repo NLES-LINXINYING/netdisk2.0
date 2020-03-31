@@ -42,6 +42,11 @@ public class DeleteController {
         //回收站路径
         String recyclePath="D:/upload/"+uname+"/回收站/";
 
+        java.io.File rb_dir=new java.io.File(recyclePath);
+        if(!rb_dir.exists()){
+            rb_dir.mkdirs();
+        }
+
         //删除时间、有效时间
         long curTime=System.currentTimeMillis();
         Timestamp deltime=new Timestamp(curTime);

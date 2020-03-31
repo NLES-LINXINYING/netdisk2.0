@@ -65,7 +65,7 @@ function renamefunc(data) {
                         dataType: 'json',
                         data: {
                             name: ffname,
-                            id: data[0].id
+                            id: data.id
                         },
                         success: function (msg) {
                             if (msg['code'] == 0) {

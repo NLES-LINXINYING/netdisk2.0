@@ -17,11 +17,12 @@ spring:
         cors-configurations:
           '[/**]':
             allowed-Headers: "*"
-            allowed-Origins:
-            - "http://localhost:8010"
-            - "http://localhost:8020"
-            - "http://localhost:8030"
-            - "http://localhost:8040"
+            allowed-Origins: "*"
+#            - "http://localhost:8010"
+#            - "http://localhost:8020"
+#            - "http://localhost:8030"
+#            - "http://localhost:8040"
+#            - "http://domain.com"
             allowed-Credentials: true
             allowed-Methods:
             - GET
@@ -69,6 +70,4 @@ spring:
           uri: http://localhost:8040
           predicates:
             - Method=GET
-            - Path=/client/**
-          filters:
-            - StripPrefix=1
+            - Path=/netdisk/v1/**

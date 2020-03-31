@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
 
-    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
-    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
-    <script type="text/javascript" th:src="@{/js/url/urlDecode.js}"></script>
-    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
-    <script type="text/javascript" th:src="@{/js/cookie/token.js}"></script>
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css"/>
+    <script type="text/javascript" th:src="@{http://localhost:8040/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/url/urlDecode.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/cookie/token.js}"></script>
 </head>
 
 
@@ -122,9 +122,7 @@
                 document.getElementById("sdform").style.display="inline"
             },
             error: function () {
-                layer.msg('加速处理中',{
-                    time:1000
-                })
+                layer.msg('请求失败',{time:800})
             }
         })
     }
@@ -143,11 +141,11 @@
         oInput.className = "oInput";
         oInput.style.display = "none";
 
-        layer.msg('复制成功',{time: 500})
+        layer.msg('复制成功')
 
         setTimeout(function () {
             window.parent.location.reload()
-        },1000)
+        },800)
     }
 </script>
 </body>

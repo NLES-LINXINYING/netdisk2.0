@@ -17,47 +17,49 @@ function login() {
 
                     //存token
                     setCookie(mydata['data']['token'])
+
                     //初始化当前路径
                     var path="D:/upload/"+mydata['data']['uname']+"/"
+
                     setPath(path)
                     //console.log(getPath())
 
                     var token="Bearer "+getCookie()
 
                     if(mydata['data']['role']=="admin"){
-                        //页面跳转，验证token
+                       /* //页面跳转，验证token
                         $.ajax({
-                            url: 'http://localhost:8763/client/redirect/admin/user_manage',
+                            url: 'http://localhost:8763/netdisk/v1/admin/user_manage',
                             type:"get",
                             headers:{Authorization:token},
                             async: false,
                             data: {},
                             success:function(msg){
-                                window.location.href = "http://localhost:8040/redirect/admin/user_manage";
+                                window.location.href = "http://localhost:8040/netdisk/v1/admin/user_manage";
                             },
                             error:function () {
 
                             }
 
-                        })
-
-
+                        })*/
+                        window.location.href='http://localhost:8763/netdisk/v1/admin/user_manage'
                     }else if(mydata['data']['role']=="user"){
-                        //页面跳转，验证token
+                        /*//页面跳转，验证token
                         $.ajax({
-                            url: "http://localhost:8763/client/redirect/user2/page_first",
+                            url: "http://localhost:8763/netdisk/v1/user/page_first",
                             type:"get",
                             headers:{Authorization:token},
                             async: false,
                             data: {},
                             success:function(msg){
-                                window.location.href = "http://localhost:8040/redirect/user2/page_first";
+                                window.location.href = "http://localhost:8040/netdisk/v1/user/page_first";
                             },
                             error:function () {
 
                             }
 
-                        })
+                        })*/
+                        window.location.href='http://localhost:8763/netdisk/v1/user/page_first'
                     }
                 }else {
                     layer.msg("用户名或密码不正确，请重新输入")

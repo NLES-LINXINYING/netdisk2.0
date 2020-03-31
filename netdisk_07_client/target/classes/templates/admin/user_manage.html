@@ -2,16 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <html lang="en">
 <head>
+    <base href="http://localhost:8763/netdisk/v1/"/>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>管理员--用户管理</title>
 
-    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
-    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
-    <script type="text/javascript" th:src="@{/static/js/jquery.min.js}"></script>
-    <script type="text/javascript" th:src="@{/static/js/signInAndSignUp/logout.js}"></script>
-    <script type="text/javascript" th:src="@{/static/js/cookie/token/getTokenFromCookie.js}"></script>
-    <script type="text/javascript" th:src="@{/js/admin/PageInit.js}"></script>
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css"/>
+    <script type="text/javascript" th:src="@{http://localhost:8040/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/signInAndSignUp/logout.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/cookie/token.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/admin/getUserName.js}"></script>
 
     <style>
         .layui-table-view{
@@ -29,7 +31,7 @@
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="#2">
-                    <img th:src="@{/images/picture.jpg}" class="layui-nav-img">
+                    <img th:src="@{http://localhost:8040/images/picture.jpg}" class="layui-nav-img">
                     <cite id="username"></cite>
                 </a>
             </li>
@@ -42,11 +44,11 @@
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree" lay-filter="test">
                 <div style="float: top">
-                    <li class="layui-nav-item layui-bg-green"><a id="user_manage" href="/redirect/admin/user_manage">&nbsp;&nbsp;用户管理</a>
+                    <li class="layui-nav-item layui-bg-green"><a id="user_manage" href="admin/user_manage">&nbsp;&nbsp;用户管理</a>
                     </li>
-                    <li class="layui-nav-item"><a id="data_dictionary" href="/redirect/admin/data_dictionary">&nbsp;&nbsp;数据字典</a>
+                    <li class="layui-nav-item"><a id="data_dictionary" href="admin/data_dictionary">&nbsp;&nbsp;数据字典</a>
                     </li>
-                    <li class="layui-nav-item"><a id="parameter_manage" href="/redirect/admin/parameter_manage">&nbsp;&nbsp;参数设置</a>
+                    <li class="layui-nav-item"><a id="parameter_manage" href="admin/parameter_manage">&nbsp;&nbsp;参数设置</a>
                     </li>
                 </div>
             </ul>

@@ -1,12 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <html>
 <head>
+    <base href="http://localhost:8763/netdisk/v1/"/>
+
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Netdisk</title>
-    <link rel="stylesheet" th:href="@{http://localhost:8040/layui/css/layui.css}">
-    <link rel="stylesheet" th:href="@{http://localhost:8040/font-awesome-4.7.0/css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css"/>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
     <script type="text/javascript" th:src="@{http://localhost:8040/layui/layui.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/echarts.min.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/myjs/PageInit.js}"></script>
@@ -24,19 +27,20 @@
     <script type="text/javascript" th:src="@{http://localhost:8040/js/user/delete.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/user/download.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/user/share.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/signInAndSignUp/logout.js}"></script>
 
 
     <style>
+        .layui-table-tool {
+            display: none;
+        }
+
+        .layui-table, .layui-table-view {
+            margin-top: 0px;
+        }
+
         .layui-table-body {
             overflow-x: hidden;
-        }
-
-        .layui-table tbody tr:hover, .layui-table thead tr, .layui-table-click, .layui-table-header, .layui-table-hover, .layui-table-mend, .layui-table-patch, .layui-table-tool, .layui-table-total, .layui-table-total tr, .layui-table[lay-even] tr:nth-child(even) {
-            background-color: white;
-        }
-
-        .layui-table-view {
-            margin-top: 0;
         }
 
         .layui-layout-admin .layui-side {
@@ -96,8 +100,7 @@
         }
     </style>
 
-
-    <cite id="uid" hidden></cite>
+    <cite th:id="uid" hidden></cite>
     <cite id="path1" hidden></cite>  <!--当前用户根目录-->
     <cite id="path2" hidden></cite>  <!--当前用户目前所在目录-->
 </head>
@@ -116,9 +119,10 @@
                 </li>
 
                 <li style="position:relative;margin-top: 20px;margin-bottom: 20px;">
-                    <a href="http://localhost:8040/redirect/user2/page_personalCenter">
+                    <a href="user/page_personalCenter">
                         <div class="layui-inline">
-                            <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;" id="mypicture">
+                            <img class="layui-circle" src="http://localhost:8040/images/picture.jpg" width="40px"
+                                 height="40px;" id="mypicture">
                         </div>
                         <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
                             <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
@@ -128,30 +132,28 @@
                 </li>
 
                 <li class="layui-nav-item">
-                    <a href="http://localhost:8040/redirect/user2/page_first"
-                       style="color: #0C0C0C;position: relative;">
+                    <a href="user/page_first" style="color: #0C0C0C;position: relative;">
                         <i class="fa fa-pie-chart" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">使用详情</span>
                     </a>
                 </li>
 
 
-                <li class="layui-nav-item">
-                    <a href="http://localhost:8040/redirect/user2/page_all" style="color: #0C0C0C;position: relative;">
+                <li class="layui-nav-item layui-bg-gray">
+                    <a href="user/page_all" style="color: #0C0C0C;position: relative;">
                         <i class="fa fa-folder" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">全部文件</span>
                     </a>
                 </li>
 
                 <li class="layui-nav-item">
-                    <a href="http://localhost:8040/redirect/user2/page_upload"
-                       style="color: #0C0C0C;position: relative;">
+                    <a href="user/page_upload" style="color: #0C0C0C;position: relative;">
                         <i class="fa fa-cloud-upload" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">上传文件</span>
                     </a>
                 </li>
 
-                <li class="layui-nav-item layui-nav-itemed">
+                <li class="layui-nav-item">
                     <a href="javascript:;" style="color: #0C0C0C;position: relative;left: 5px;">
                         <i class="fa fa-cubes" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">分类文件</span>
@@ -160,8 +162,7 @@
                     </a>
                     <dl class="layui-nav-child">
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_picture"
-                               style="color: #0C0C0C;position: relative;left: 10px;">
+                            <a href="user/page_picture" style="color: #0C0C0C;position: relative;left: 10px;">
                                 <!--                                <i class="fa fa-picture-o" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">图片文件</span>
                                 <span class="layui-badge layui-bg-blue" id="pictureNum"
@@ -169,16 +170,14 @@
                             </a>
                         </dd>
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_word"
-                               style="color: #0C0C0C;position: relative;left: 10px;">
+                            <a href="user/page_word" style="color: #0C0C0C;position: relative;left: 10px;">
                                 <!--                                <i class="fa fa-file-text-o" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">文档文件</span>
                                 <span class="layui-badge layui-bg-blue" id="wordNum" style="margin-left: 10px;">0</span>
                             </a>
                         </dd>
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_video"
-                               style="color: #0C0C0C;position: relative;left: 10px;">
+                            <a href="user/page_video" style="color: #0C0C0C;position: relative;left: 10px;">
                                 <!--                                <i class="fa fa-file-video-o" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">视频文件</span>
                                 <span class="layui-badge layui-bg-blue" id="videoNum"
@@ -186,17 +185,15 @@
                             </a>
                         </dd>
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_torrent"
-                               style="color: #0C0C0C;position: relative;left: 10px;">
+                            <a href="user/page_torrent" style="color: #0C0C0C;position: relative;left: 10px;">
                                 <!--                                <i class="fa fa-tumblr-square" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">种子文件</span>
                                 <span class="layui-badge layui-bg-blue" id="torrentNum"
                                       style="margin-left: 10px;">0</span>
                             </a>
                         </dd>
-                        <dd class="layui-bg-gray">
-                            <a href="http://localhost:8040/redirect/user2/page_music"
-                               style="color: #0C0C0C;position: relative;left: 10px;">
+                        <dd>
+                            <a href="user/page_music" style="color: #0C0C0C;position: relative;left: 10px;">
                                 <!--                                <i class="fa fa-file-audio-o" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">音频文件</span>
                                 <span class="layui-badge layui-bg-blue" id="musicNum"
@@ -204,8 +201,7 @@
                             </a>
                         </dd>
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_other"
-                               style="color: #0C0C0C;position: relative;left: 10px;">
+                            <a href="user/page_other" style="color: #0C0C0C;position: relative;left: 10px;">
                                 <!--                                <i class="fa fa-file-o" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">其他文件</span>
                                 <span class="layui-badge layui-bg-blue" id="otherNum"
@@ -215,17 +211,38 @@
                     </dl>
                 </li>
 
-                <li class="layui-nav-item">
-                    <a href="http://localhost:8040/redirect/user2/page_privateSpace"
-                       style="color: #0C0C0C;position: relative;">
+                <!--<li class="layui-nav-item">
+                    <a href="user/page_privateSpace" style="color: #0C0C0C;position: relative;">
                         <i class="fa fa-lock" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">私密空间</span>
                     </a>
+                </li>-->
+
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;" style="color: #0C0C0C;position: relative;left: 5px;">
+                        <i class="fa fa-share-alt" style="font-size: 18px; color: grey;"></i>
+                        <span style="margin-left: 20px;">我的分享</span>
+                        <i class="fa fa-angle-down"
+                           style="font-size: 14px; color: grey;position: relative;left: 10px;"></i>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="user/page_myshare" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <span style="margin-left: 20px;">分享列表</span>
+                            </a>
+                        </dd>
+                    </dl>
+                    <dl class="layui-nav-child">
+                        <dd class="layui-bg-gray">
+                            <a href="user/getshare" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <span style="margin-left: 20px;">获取分享</span>
+                            </a>
+                        </dd>
+                    </dl>
                 </li>
 
                 <li class="layui-nav-item">
-                    <a href="http://localhost:8040/redirect/user2/page_recycleBin"
-                       style="color: #0C0C0C;position: relative;">
+                    <a href="user/page_recycleBin" style="color: #0C0C0C;position: relative;">
                         <i class="fa fa-trash" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">回&nbsp;&nbsp;收&nbsp;&nbsp;站</span>
                     </a>
@@ -234,7 +251,7 @@
 
                 <li class="layui-nav-item">
                     <button type="button" class="layui-btn layui-btn-danger layui-btn-radius"
-                            style="position: relative;">
+                            style="position: relative;" onclick="logout()">
                         <i class="fa fa-power-off" style="font-size: 18px; color: white;"></i>
                         <span style="margin-left: 20px;">退出登录</span>
                     </button>
@@ -257,170 +274,174 @@
 
         <div style="background-color: white;width: 94%;height: 60px;position: relative;margin-top: -30px;left: 3%;right: 3%;border-radius: 5px;">
             <div style="position: absolute;top: 50%;margin-top: -13px;margin-left: 20px;">
-                <i class="fa fa-file-audio-o" style="font-size: 20px; color: grey;"></i>
-                <span style="margin-left: 10px;font-size: 20px;">我的音频</span>
+                <i class="fa fa-cloud-download" style="font-size: 20px; color: grey;"></i>
+                <span style="margin-left: 10px;font-size: 20px;">获取分享</span>
             </div>
         </div>
 
 
-        <div style="background-color: white;position:relative;left: 3%;right: 3%;top:20px;width: 94%;height:74%;bottom: 20px;">
-
-            <table id="file" lay-filter="file"></table>
-
-            <!--表格数据初始化-->
-            <script>
-                //动态表格
-                layui.use('table', function () {
-                    var table = layui.table;
-
-                    var uid = document.getElementById("uid").innerText;
-                    var token = "Bearer " + getCookie()
-
-                    table.render({
-                        elem: '#file'
-                        , url: 'http://localhost:8763/file/file/findByType?uid=' + uid + "&type=5" //数据接口
-                        , method: 'get'
-                        , headers: {Authorization: token}
-                        , height: 'full-195'
-                        , skin: 'nob' //无边框
-                        , size: 'lg'
-                        , cols: [
-                            [ //表头
-                                {width: '5%'},
-                                {width: '6%', templet: '#fileicon'},
-                                {
-                                    field: 'name',
-                                    title: '文件名',
-                                    width: '24%',
-                                    unresize: 'true',
-                                    templet: '#filename'
-                                },
-                                {
-                                    field: 'size',
-                                    title: '大小',
-                                    width: '15%',
-                                    unresize: 'true',
-                                    templet: '#size'
-                                },
-                                {
-                                    field: 'modifyTime',
-                                    title: '修改日期',
-                                    width: '20%',
-                                    unresize: 'true',
-                                    templet: '#timeformat'
-                                },
-                                {fixed: 'right', title: '操作', toolbar: '#barDemo', width: '30%'}
-                            ]
-                        ]
-                        , id: 'ftable'
-                    });
-
-
-                    //监听行工具事件
-                    table.on('tool(file)', function (obj) {
-                        var data = obj.data;
-                        console.log(data)
-
-                        if (obj.event === 'move') {
-                            moveto(data)
-                        } else if (obj.event === 'copy') {
-                            copyto(data)
-                        } else if (obj.event === 'rename') {
-                            renamefunc(data)
-                        } else if (obj.event === 'del') {
-                            deletefunc(data)
-                        } else if (obj.event === 'download') {
-                            downloaddemo(data)
-                        } else if (obj.event === 'share') {
-                            sharefunc(data)
-                        }
-                    });
-
-                });
-            </script>
-
-
-            <!--行工具事件-->
-            <script type="text/html" id="barDemo">
-                <a class="layui-btn layui-btn-xs" lay-event="share">分享</a>
-                <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-                <a class="layui-btn layui-btn-xs" lay-event="rename">重命名</a>
-            </script>
-
-
-            <!--根据文件类型在前面显示图标-->
-            <script type="text/html" id="fileicon">
-                {{# if(d.type=="1") { }}
-                <i class="fa fa-file-image-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } else if(d.type=="2") { }}
-                <i class="fa fa-file-word-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } else if(d.type=="3") { }}
-                <i class="fa fa-file-video-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } else if(d.type=="4") { }}
-                <i class="fa fa-tumblr-square fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } else if(d.type=="5") { }}
-                <i class="fa fa-file-audio-o fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } else { }}
-                <i class="fa fa-file fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
-                {{# } }}
-            </script>
-
-
-            <!--文件名变色-->
-            <script type="text/html" id="filename">
-                <a id={{d.id}} style="color: grey;position: relative;top: 0%;" onmouseenter="mouseenter('{{d.id}}')"
-                   onmouseleave="mouseleave('{{d.id}}')">{{ d.name }}</a>
-            </script>
-
-
-            <!--文件大小为空时-->
-            <script type="text/html" id="size">
-                {{# if(d.size==null){ }}
-                <p>{{ d.size='-' }}</p>
-                {{# }else{ }}
-                <p>{{ sizeformat(d.size) }}</p>
-                {{# } }}
-            </script>
-
-
-            <!--时间格式转换-->
-            <script type="text/html" id="timeformat">
-                {{# d.modifyTime = timeformat(d.modifyTime) }}
-                <p>{{ d.modifyTime }}</p>
-            </script>
-
-
-            <!--  文件重命名表单  -->
-            <form class="layui-form" id="renameform" style="display: none;">
-                <div class="layui-form-item" style="margin-top: 20px;margin-left:0px;">
-                    <label class="layui-form-label" style="width: 90px;padding-right: 5px">新名字：</label>
+        <div style="background-color: white;position:relative;left: 3%;right: 3%;top:20px;width: 94%;height:74%;">
+            <div style="height: 20px;width: 100%;" id="nothing"></div>
+            <form class="layui-form" id="myform" style="position: relative;margin-top: 10px;margin-right: 50%;"
+                  onsubmit="return false">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">分享链接：</label>
                     <div class="layui-input-block">
-                        <input type="text" required lay-verify="required" autocomplete="on"
-                               class="layui-input" id="ffname1" style="width:150px">
+                        <input type="text" id="link" lay-verify="required" required="required" autocomplete="off"
+                               placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">提取码：</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="code" lay-verify="required" placeholder="请输入" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="submit" class="layui-btn" onclick="confirm()">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                     </div>
                 </div>
             </form>
 
+
+            <div id="mytable" style="position:relative;top: -10px;display: none;width: 100%;">
+                <table id="file" lay-filter="file"></table>
+
+                <!--根据文件类型在前面&后面显示图标,"nf-icon"默认隐藏，新建文件夹-->
+                <script type="text/html" id="fileicon">
+                    <!--文件夹-->
+                    {{# if(d.size==null){ }}
+                    <i class="fa fa-folder fa-2x" style="color: yellow;position: relative;top: 10%;">&nbsp;</i>
+                    <a style="color: grey;position: relative;top: 0%;">{{ d.name }}</a>
+
+                    <!--  文件  -->
+                    {{# }else{ }}
+                    <i class="fa fa-file fa-2x" style="color: dodgerblue;position: relative;top: 10%;">&nbsp;</i>
+                    <a style="color: grey;position: relative;top: 0%;">{{ d.name }}</a>
+                    {{# } }}
+
+                </script>
+
+                <!--文件大小为空时-->
+                <script type="text/html" id="size">
+                    {{# if(d.size==null){ }}
+                    <p>{{ d.size='-' }}</p>
+                    {{# }else{ }}
+                    <p>{{ sizeformat(d.size) }}</p>
+                    {{# } }}
+                </script>
+
+                <!--时间格式转换-->
+                <script type="text/html" id="timeformat">
+                    {{# d.modifyTime = timeformat(d.modifyTime) }}
+                    <p>{{ d.modifyTime }}</p>
+                </script>
+
+                <!--行工具事件-->
+                <script type="text/html" id="barDemo">
+                    <a class="layui-btn layui-btn-xs" lay-event="copy">添加</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>
+                </script>
+            </div>
+
+
+            <script type="text/javascript">
+                function confirm() {
+                    var link = document.getElementById("link").value
+                    var code = document.getElementById("code").value
+                    var token = "Bearer " + getCookie()
+
+                    /*console.log(link)
+                    console.log(code)*/
+
+                    document.getElementById("myform").style.display = "none";
+                    document.getElementById("nothing").style.display = "none";
+                    document.getElementById("mytable").style.display = "inline-block";
+
+                    //动态表格
+                    layui.use('table', function () {
+                        var table = layui.table;
+
+                        table.render({
+                            elem: '#file'
+                            , url: 'http://localhost:8763/file/myshare/check' //数据接口
+                            , method: 'get'
+                            , headers: {Authorization: token}
+                            , where: {
+                                link: link,
+                                code: code
+                            }
+                            , height: 'full-20'
+                            , skin: 'nob'
+                            , even: true
+                            , size: 'lg'
+                            , toolbar: '#headtoolbar' //头部工具栏
+                            , defaultToolbar: false
+                            , cols: [
+                                [
+                                    {width: '5%'},
+                                    {
+                                        field: 'name',
+                                        title: '文件名',
+                                        width: '25%',
+                                        unresize: 'true',
+                                        sort: true,
+                                        templet: '#fileicon'
+                                    }
+                                    , {
+                                    field: 'size',
+                                    title: '大小',
+                                    width: '20%',
+                                    unresize: 'true',
+                                    sort: true,
+                                    templet: '#size'
+                                }
+                                    , {
+                                    field: 'modifyTime',
+                                    title: '修改日期',
+                                    width: '30%',
+                                    unresize: 'true',
+                                    sort: true,
+                                    templet: '#timeformat'
+                                },
+                                    {fixed: 'right', title: '操作', toolbar: '#barDemo', width: '20%'}
+                                ]
+                            ]
+                        });
+
+                        //监听行工具事件
+                        table.on('tool(file)', function (obj) {
+                            var data = obj.data;
+
+                            if (obj.event === 'copy') {
+                                copyto(data)
+                            } else if (obj.event === 'download') {
+                                downloaddemo(data)
+                            }
+                        });
+                    });
+                }
+            </script>
+
+
+            <div class="layui-footer">
+                © netdisk - 共享网盘 -lxy
+            </div>
         </div>
-    </div>
 
+        <script>
+            window.onload = function () {
+                layui.use('element', function () {
+                    var element = layui.element;
+                });
 
-    <div class="layui-footer">
-        © layui.com - 底部固定区域
-    </div>
-</div>
-
-
-<script>
-    //JavaScript代码区域
-    layui.use('element', function () {
-        var element = layui.element;
-    });
-
-    window.onload=function () {
-        pageInit();
-    }
-</script>
+                pageInit();
+            }
+        </script>
 </body>
 </html>

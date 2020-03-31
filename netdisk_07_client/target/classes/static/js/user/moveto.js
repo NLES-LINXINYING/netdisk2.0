@@ -22,7 +22,7 @@ function moveto(data) {
         area: ['450px', '360px'],
         maxmin: false,
         scrollbar: false,
-        content: "http://localhost:8040/redirect/user2/moveSelectPath?uid=" + uid + "&ffid=" + ffid + "&fid=" + fid,
+        content: "http://localhost:8763/netdisk/v1/user/moveSelectPath?uid=" + uid + "&ffid=" + ffid + "&fid=" + fid,
         zIndex: layer.zIndex, //重点1
         success: function (layero) {
             layer.setTop(layero); //重点2

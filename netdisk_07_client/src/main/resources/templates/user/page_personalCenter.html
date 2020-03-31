@@ -2,15 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <html>
 <head>
+    <base href="http://localhost:8763/netdisk/v1/" />
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Netdisk</title>
-    <link rel="stylesheet" th:href="@{http://localhost:8040/layui/css/layui.css}">
-    <link rel="stylesheet" th:href="@{http://localhost:8040/font-awesome-4.7.0/css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script type="text/javascript" th:src="@{http://localhost:8040/layui/layui.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/cookie/token.js}"></script>
     <script type="text/javascript" th:src="@{http://localhost:8040/js/jquery.min.js}"></script>
-
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/signInAndSignUp/logout.js}"></script>
 
     <style>
         .pchover{
@@ -102,10 +104,10 @@
                     </div>
                 </li>
 
-                <li class="layui-bg-gray" style="position:relative;margin-top: 20px;margin-bottom: 20px;">
-                    <a href="http://localhost:8040/redirect/user2/page_personalCenter">
+                <li style="position:relative;margin-top: 20px;margin-bottom: 20px;" class="layui-bg-gray">
+                    <a href="user/page_personalCenter">
                         <div class="layui-inline">
-                            <img class="layui-circle" src="/images/picture.jpg" width="40px" height="40px;" id="mypicture">
+                            <img class="layui-circle" src="http://localhost:8040/images/picture.jpg" width="40px" height="40px;" id="mypicture">
                         </div>
                         <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
                             <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
@@ -115,7 +117,7 @@
                 </li>
 
                 <li class="layui-nav-item">
-                    <a href="http://localhost:8040/redirect/user2/page_first" style="color: #0C0C0C;position: relative;">
+                    <a href="user/page_first" style="color: #0C0C0C;position: relative;">
                         <i class="fa fa-pie-chart" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">使用详情</span>
                     </a>
@@ -123,14 +125,14 @@
 
 
                 <li class="layui-nav-item">
-                    <a href="http://localhost:8040/redirect/user2/page_all" style="color: #0C0C0C;position: relative;">
+                    <a href="user/page_all" style="color: #0C0C0C;position: relative;">
                         <i class="fa fa-folder" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">全部文件</span>
                     </a>
                 </li>
 
                 <li class="layui-nav-item">
-                    <a href="http://localhost:8040/redirect/user2/page_upload" style="color: #0C0C0C;position: relative;">
+                    <a href="user/page_upload" style="color: #0C0C0C;position: relative;">
                         <i class="fa fa-cloud-upload" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">上传文件</span>
                     </a>
@@ -145,43 +147,43 @@
                     </a>
                     <dl class="layui-nav-child">
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_picture" style="color: #0C0C0C;position: relative;left: 10px;">
-<!--                                <i class="fa fa-picture-o" style="font-size: 18px; color: grey;"></i>-->
+                            <a href="user/page_picture" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-picture-o" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">图片文件</span>
                                 <span class="layui-badge layui-bg-blue" id="pictureNum" style="margin-left: 10px;">0</span>
                             </a>
                         </dd>
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_word" style="color: #0C0C0C;position: relative;left: 10px;">
-<!--                                <i class="fa fa-file-text-o" style="font-size: 18px; color: grey;"></i>-->
+                            <a href="user/page_word" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-file-text-o" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">文档文件</span>
                                 <span class="layui-badge layui-bg-blue" id="wordNum" style="margin-left: 10px;">0</span>
                             </a>
                         </dd>
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_video" style="color: #0C0C0C;position: relative;left: 10px;">
-<!--                                <i class="fa fa-file-video-o" style="font-size: 18px; color: grey;"></i>-->
+                            <a href="user/page_video" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-file-video-o" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">视频文件</span>
                                 <span class="layui-badge layui-bg-blue" id="videoNum" style="margin-left: 10px;">0</span>
                             </a>
                         </dd>
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_torrent" style="color: #0C0C0C;position: relative;left: 10px;">
-<!--                                <i class="fa fa-tumblr-square" style="font-size: 18px; color: grey;"></i>-->
+                            <a href="user/page_torrent" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-tumblr-square" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">种子文件</span>
                                 <span class="layui-badge layui-bg-blue" id="torrentNum" style="margin-left: 10px;">0</span>
                             </a>
                         </dd>
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_music" style="color: #0C0C0C;position: relative;left: 10px;">
-<!--                                <i class="fa fa-file-audio-o" style="font-size: 18px; color: grey;"></i>-->
+                            <a href="user/page_music" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-file-audio-o" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">音频文件</span>
                                 <span class="layui-badge layui-bg-blue" id="musicNum" style="margin-left: 10px;">0</span>
                             </a>
                         </dd>
                         <dd>
-                            <a href="http://localhost:8040/redirect/user2/page_other" style="color: #0C0C0C;position: relative;left: 10px;">
-<!--                                <i class="fa fa-file-o" style="font-size: 18px; color: grey;"></i>-->
+                            <a href="user/page_other" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-file-o" style="font-size: 18px; color: grey;"></i>-->
                                 <span style="margin-left: 20px;">其他文件</span>
                                 <span class="layui-badge layui-bg-blue" id="otherNum" style="margin-left: 10px;">0</span>
                             </a>
@@ -189,15 +191,38 @@
                     </dl>
                 </li>
 
-                <li class="layui-nav-item">
-                    <a href="http://localhost:8040/redirect/user2/page_privateSpace" style="color: #0C0C0C;position: relative;">
+                <!--<li class="layui-nav-item">
+                    <a href="user/page_privateSpace" style="color: #0C0C0C;position: relative;">
                         <i class="fa fa-lock" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">私密空间</span>
                     </a>
+                </li>-->
+
+                <li class="layui-nav-item">
+                    <a href="javascript:;" style="color: #0C0C0C;position: relative;left: 5px;">
+                        <i class="fa fa-share-alt" style="font-size: 18px; color: grey;"></i>
+                        <span style="margin-left: 20px;">我的分享</span>
+                        <i class="fa fa-angle-down"
+                           style="font-size: 14px; color: grey;position: relative;left: 10px;"></i>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="user/page_myshare" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <span style="margin-left: 20px;">分享列表</span>
+                            </a>
+                        </dd>
+                    </dl>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="user/getshare" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <span style="margin-left: 20px;">获取分享</span>
+                            </a>
+                        </dd>
+                    </dl>
                 </li>
 
                 <li class="layui-nav-item">
-                    <a href="http://localhost:8040/redirect/user2/page_recycleBin" style="color: #0C0C0C;position: relative;">
+                    <a href="user/page_recycleBin" style="color: #0C0C0C;position: relative;">
                         <i class="fa fa-trash" style="font-size: 18px; color: grey;"></i>
                         <span style="margin-left: 20px;">回&nbsp;&nbsp;收&nbsp;&nbsp;站</span>
                     </a>
@@ -208,7 +233,7 @@
 
                 <li class="layui-nav-item">
                     <button type="button" class="layui-btn layui-btn-danger layui-btn-radius"
-                            style="position: relative;">
+                            style="position: relative;" onclick="logout()">
                         <i class="fa fa-power-off" style="font-size: 18px; color: white;"></i>
                         <span style="margin-left: 20px;">退出登录</span>
                     </button>
@@ -258,7 +283,7 @@
                             <div class="layui-row layui-col-space30">
                                 <div class="layui-col-md6">
                                     <div class="layui-card pchover">
-                                        <div class="layui-card-body" onclick=window.location="http://localhost:8040/redirect/user2/updatePassword1">
+                                        <div class="layui-card-body" onclick=window.location="http://localhost:8763/netdisk/v1/user/updatePassword1">
                                             <p style="display: inline-block;font-size: 16px;">设置密码</p>
                                             <i class="layui-icon layui-icon-ok-circle"
                                                style="font-size: 16px; color: #71ff50;"></i>
@@ -272,7 +297,7 @@
 
                                 <div class="layui-col-md6">
                                     <div class="layui-card pchover">
-                                        <div class="layui-card-body" onclick=window.location="http://localhost:8040/redirect/user2/updatePicture">
+                                        <div class="layui-card-body" onclick=window.location="http://localhost:8763/netdisk/v1/user/updatePicture">
                                             <p style="display: inline-block;font-size: 16px;">设置头像</p>
                                             <i class="layui-icon layui-icon-ok-circle"
                                                style="font-size: 16px; color: #71ff50;"></i>
@@ -289,7 +314,7 @@
                             <div class="layui-row layui-col-space30" style="padding-bottom: 2%;">
                                 <div class="layui-col-md6">
                                     <div class="layui-card pchover">
-                                        <div class="layui-card-body" onclick=window.location="http://localhost:8040/redirect/user2/phoneBinding">
+                                        <div class="layui-card-body" onclick=window.location="http://localhost:8763/netdisk/v1/user/phoneBinding">
                                             <p style="display: inline-block;font-size: 16px;">绑定手机</p>
                                             <i class="layui-icon layui-icon-ok-circle"
                                                style="font-size: 16px; color: #71ff50;"></i>
@@ -303,7 +328,7 @@
 
                                 <div class="layui-col-md6">
                                     <div class="layui-card pchover">
-                                        <div class="layui-card-body" onclick=window.location="http://localhost:8040/redirect/user2/emailBinding">
+                                        <div class="layui-card-body" onclick=window.location="http://localhost:8763/netdisk/v1/user/emailBinding">
                                             <p style="display: inline-block;font-size: 16px;">绑定邮箱</p>
                                             <i class="layui-icon layui-icon-ok-circle"
                                                style="font-size: 16px; color: #71ff50;"></i>
@@ -327,7 +352,7 @@
 
 
     <div class="layui-footer">
-        © layui.com - 底部固定区域
+        © netdisk - 共享网盘 -lxy
     </div>
 </div>
 
@@ -340,7 +365,6 @@
         var token = "Bearer " + getCookie()
         var score = 1  //登陆密码已经设置
 
-        var layer=layui.layer
         var uid
 
 

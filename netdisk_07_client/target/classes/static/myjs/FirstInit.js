@@ -27,7 +27,7 @@ function firstInit () {
             // 指定图表的配置项和数据
             var option2 = {
                 title: {
-                    text: '空间使用情况(单位: MB)',
+                    text: '空间使用情况(总容量:'+total+' MB)',
                     left: 'left',
                     textStyle:{
                         fontWeight:'normal',
@@ -49,6 +49,8 @@ function firstInit () {
                     selectedMode: 'single',
                     minAngle: 0,
                     clockwise: true,
+                    startAngle: 0,
+                    minShowLabelAngle: 1,
                     data: [
                         {value: used, name: '已使用'},
                         {value: (total-used).toFixed(2), name: '未使用'}
@@ -159,7 +161,9 @@ function firstInit () {
                     center: ['50%', '40%'],
                     selectedMode: 'single',
                     minAngle: 0,
-                    clockwise: false,
+                    clockwise: true,
+                    startAngle: 0,
+                    minShowLabelAngle: 1,
                     data: [
                         {value: picture, name: '图片'},
                         {value: word, name: '文档'},

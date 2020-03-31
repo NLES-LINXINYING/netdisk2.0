@@ -1,11 +1,408 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>私密空间</title>
-    <h1>隐私空间，待完成</h1>
-</head>
-<body>
+    <base href="http://localhost:8763/netdisk/v1/" />
 
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Netdisk</title>
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <script type="text/javascript" th:src="@{http://localhost:8040/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/echarts.min.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/myjs/PageInit.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/cookie/token.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/cookie/path.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/sizeformat.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/timeformat.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/all_updateByPath.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/fname_chg_color.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/folder_create.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/copyto.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/moveto.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/rename.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/delete.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/download.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/user/share.js}"></script>
+    <script type="text/javascript" th:src="@{http://localhost:8040/js/signInAndSignUp/logout.js}"></script>
+
+
+    <style>
+        .layui-table-body {
+            overflow-x: hidden;
+        }
+
+        .layui-table tbody tr:hover, .layui-table thead tr, .layui-table-click, .layui-table-header, .layui-table-hover, .layui-table-mend, .layui-table-patch, .layui-table-tool, .layui-table-total, .layui-table-total tr, .layui-table[lay-even] tr:nth-child(even) {
+            background-color: white;
+        }
+
+        .layui-table-view {
+            margin-top: 0;
+        }
+
+        .layui-layout-admin .layui-side {
+            top: 0px;
+        }
+
+        .layui-layout-admin .layui-body {
+            top: 0px;
+        }
+
+        .logo {
+            position: relative;
+        }
+
+        .logo-character {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -40px;
+            margin-top: -10px;
+        }
+
+        .layui-nav-tree .layui-nav-item a:hover {
+            background-color: white;
+        }
+
+        .layui-nav-itemed > a, .layui-nav-tree .layui-nav-title a, .layui-nav-tree .layui-nav-title a:hover {
+            color: #0C0C0C !important
+        }
+
+        .layui-nav-itemed > .layui-nav-child {
+            display: block;
+            padding: 0;
+            background-color: white !important;
+        }
+
+        .layui-nav-tree .layui-nav-child a {
+            height: 40px;
+            line-height: 40px;
+            color: #fff;
+            color: #0C0C0C;
+        }
+
+        .layui-nav-tree .layui-nav-child, .layui-nav-tree .layui-nav-child a:hover {
+            background: 0 0;
+            color: #0C0C0C;
+        }
+
+        .layui-nav-tree .layui-nav-bar {
+            width: 0px;
+            height: 0;
+        }
+
+        .layui-nav-tree .layui-nav-child dd.layui-this, .layui-nav-tree .layui-nav-child dd.layui-this a, .layui-nav-tree .layui-this, .layui-nav-tree .layui-this > a, .layui-nav-tree .layui-this > a:hover {
+            background-color: #eee;
+            color: #fff;
+        }
+    </style>
+
+
+    <cite id="uid" hidden></cite>
+    <cite id="path1" hidden></cite>  <!--当前用户根目录-->
+    <cite id="path2" hidden></cite>  <!--当前用户目前所在目录-->
+</head>
+
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+
+    <div class="layui-side layui-bg-black" style="background-color: white;">
+        <div class="layui-side-scroll" style="background-color: white;">
+            <ul class="layui-nav layui-nav-tree" lay-filter="test" style="background-color: white;text-align: center;">
+
+                <li class="logo" style="height: 50px;width: 200px;color: #0C0C0C;">
+                    <div class="logo-character" style="font-weight: bolder;font-size: 16px;text-align: center;">伐木累网盘
+                    </div>
+                </li>
+
+                <li style="position:relative;margin-top: 20px;margin-bottom: 20px;">
+                    <a href="user/page_personalCenter">
+                        <div class="layui-inline">
+                            <img class="layui-circle" src="http://localhost:8040/images/picture.jpg" width="40px" height="40px;" id="mypicture">
+                        </div>
+                        <div class="layui-inline" style="position: relative;left: 10px;color: #0C0C0C;">
+                            <p id="username" style="font-weight: bold;font-size: 14px;">用户姓名</p>
+                            <p id="userroles" style="font-size: 10px;">用户角色</p>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="layui-nav-item ">
+                    <a href="user/page_first" style="color: #0C0C0C;position: relative;">
+                        <i class="fa fa-pie-chart" style="font-size: 18px; color: grey;"></i>
+                        <span style="margin-left: 20px;">使用详情</span>
+                    </a>
+                </li>
+
+
+                <li class="layui-nav-item">
+                    <a href="user/page_all" style="color: #0C0C0C;position: relative;">
+                        <i class="fa fa-folder" style="font-size: 18px; color: grey;"></i>
+                        <span style="margin-left: 20px;">全部文件</span>
+                    </a>
+                </li>
+
+                <li class="layui-nav-item">
+                    <a href="user/page_upload" style="color: #0C0C0C;position: relative;">
+                        <i class="fa fa-cloud-upload" style="font-size: 18px; color: grey;"></i>
+                        <span style="margin-left: 20px;">上传文件</span>
+                    </a>
+                </li>
+
+                <li class="layui-nav-item">
+                    <a href="javascript:;" style="color: #0C0C0C;position: relative;left: 5px;">
+                        <i class="fa fa-cubes" style="font-size: 18px; color: grey;"></i>
+                        <span style="margin-left: 20px;">分类文件</span>
+                        <i class="fa fa-angle-down"
+                           style="font-size: 14px; color: grey;position: relative;left: 10px;"></i>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="user/page_picture" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-picture-o" style="font-size: 18px; color: grey;"></i>-->
+                                <span style="margin-left: 20px;">图片文件</span>
+                                <span class="layui-badge layui-bg-blue" id="pictureNum" style="margin-left: 10px;">0</span>
+                            </a>
+                        </dd>
+                        <dd>
+                            <a href="user/page_word" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-file-text-o" style="font-size: 18px; color: grey;"></i>-->
+                                <span style="margin-left: 20px;">文档文件</span>
+                                <span class="layui-badge layui-bg-blue" id="wordNum" style="margin-left: 10px;">0</span>
+                            </a>
+                        </dd>
+                        <dd>
+                            <a href="user/page_video" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-file-video-o" style="font-size: 18px; color: grey;"></i>-->
+                                <span style="margin-left: 20px;">视频文件</span>
+                                <span class="layui-badge layui-bg-blue" id="videoNum" style="margin-left: 10px;">0</span>
+                            </a>
+                        </dd>
+                        <dd>
+                            <a href="user/page_torrent" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-tumblr-square" style="font-size: 18px; color: grey;"></i>-->
+                                <span style="margin-left: 20px;">种子文件</span>
+                                <span class="layui-badge layui-bg-blue" id="torrentNum" style="margin-left: 10px;">0</span>
+                            </a>
+                        </dd>
+                        <dd>
+                            <a href="user/page_music" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-file-audio-o" style="font-size: 18px; color: grey;"></i>-->
+                                <span style="margin-left: 20px;">音频文件</span>
+                                <span class="layui-badge layui-bg-blue" id="musicNum" style="margin-left: 10px;">0</span>
+                            </a>
+                        </dd>
+                        <dd>
+                            <a href="user/page_other" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <!--                                <i class="fa fa-file-o" style="font-size: 18px; color: grey;"></i>-->
+                                <span style="margin-left: 20px;">其他文件</span>
+                                <span class="layui-badge layui-bg-blue" id="otherNum" style="margin-left: 10px;">0</span>
+                            </a>
+                        </dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item layui-bg-gray">
+                    <a href="user/page_privateSpace" style="color: #0C0C0C;position: relative;">
+                        <i class="fa fa-lock" style="font-size: 18px; color: grey;"></i>
+                        <span style="margin-left: 20px;">私密空间</span>
+                    </a>
+                </li>
+
+                <li class="layui-nav-item">
+                    <a href="javascript:;" style="color: #0C0C0C;position: relative;left: 5px;">
+                        <i class="fa fa-share-alt" style="font-size: 18px; color: grey;"></i>
+                        <span style="margin-left: 20px;">我的分享</span>
+                        <i class="fa fa-angle-down"
+                           style="font-size: 14px; color: grey;position: relative;left: 10px;"></i>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="user/page_myshare" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <span style="margin-left: 20px;">分享列表</span>
+                            </a>
+                        </dd>
+                    </dl>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="user/getshare" style="color: #0C0C0C;position: relative;left: 10px;">
+                                <span style="margin-left: 20px;">获取分享</span>
+                            </a>
+                        </dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item">
+                    <a href="user/page_recycleBin" style="color: #0C0C0C;position: relative;">
+                        <i class="fa fa-trash" style="font-size: 18px; color: grey;"></i>
+                        <span style="margin-left: 20px;">回&nbsp;&nbsp;收&nbsp;&nbsp;站</span>
+                    </a>
+                </li>
+
+
+
+
+                <li class="layui-nav-item">
+                    <button type="button" class="layui-btn layui-btn-danger layui-btn-radius"
+                            style="position: relative;" onclick="logout()">
+                        <i class="fa fa-power-off" style="font-size: 18px; color: white;"></i>
+                        <span style="margin-left: 20px;">退出登录</span>
+                    </button>
+                </li>
+
+                <div style="width: 100%;height: 30px;"></div>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="layui-body" style="background-color: gainsboro;overflow-y: hidden;">
+
+        <div style="background-color: #1E9FFF;width: 100%;height: 80px;">
+            <i class="fa fa-th-large"
+               style="font-size: 18px; color: white;float:left;position: relative;margin-left: 30px;top:20px;"></i>
+            <p id="username2" style="font-size:14px;color:white;position: relative;float: right;top: 20px;right: 30px;">
+                你好，普通用户</p>
+        </div>
+
+        <div style="background-color: white;width: 94%;height: 60px;position: relative;margin-top: -30px;left: 3%;right: 3%;border-radius: 5px;">
+            <div style="position: absolute;top: 50%;margin-top: -13px;margin-left: 20px;">
+                <i class="fa fa-lock" style="font-size: 20px; color: grey;"></i>
+                <span style="margin-left: 10px;font-size: 20px;">我的私密空间</span>
+            </div>
+        </div>
+
+
+        <div style="background-color: white;position:relative;left: 3%;right: 3%;top:20px;width: 94%;height:74%;bottom: 20px;">
+
+            <table id="file" lay-filter="file"></table>
+
+            <!--表格数据初始化-->
+            <script>
+                //动态表格
+                layui.use('table', function () {
+                    var table = layui.table;
+
+                    var uid = document.getElementById("uid").innerText;
+                    var token = "Bearer " + getCookie()
+
+                    table.render({
+                        elem: '#file'
+                        , url: 'http://localhost:8763/file/recyclebin/findAll?uid=' + uid //数据接口
+                        , method: 'get'
+                        , headers: {Authorization: token}
+                        , height: 'full-195'
+                        , skin: 'nob' //无边框
+                        , size: 'lg'
+                        , cols: [
+                            [ //表头
+                                {width: '5%'},
+                                {field:'fid',width: '6%', templet: '#fileicon'},
+                                {
+                                    field: 'fid',
+                                    title: '文件名',
+                                    width: '24%',
+                                    unresize: 'true',
+                                    templet: '#filename'
+                                },
+                                {
+                                    field: 'timeOfDelete',
+                                    title: '删除时间',
+                                    width: '20%',
+                                    unresize: 'true',
+                                    templet: '#timeformat'
+                                },
+                                {
+                                    field: 'timeOfEffective',
+                                    title: '有效时间',
+                                    width: '20%',
+                                    unresize: 'true',
+                                    templet: '#timeformat2'
+                                },
+                                {fixed: 'right', title: '操作', toolbar: '#barDemo', width: '30%'}
+                            ]
+                        ]
+                        , id: 'ftable'
+                    });
+
+
+                    //监听行工具事件
+                    table.on('tool(file)', function (obj) {
+                        var data = obj.data;
+                        console.log(data)
+
+                        if (obj.event === 'del') {
+                           layer.msg('彻底删除，待完成')
+                        } else if (obj.event === 'revert') {
+                            layer.msg('还原，待完成')
+                        }
+                    });
+
+                });
+            </script>
+
+
+            <!--行工具事件-->
+            <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-xs" lay-event="revert">还原</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            </script>
+
+
+            <!--根据文件类型在前面显示图标-->
+            <script type="text/html" id="fileicon">
+                <a href="/index">
+                    {{# if(d.ffid != 0){ }}
+                    <i class="fa fa-folder fa-2x" style="color: yellow;position: relative;top: 10%;">&nbsp;</i>
+                    <a style="color: grey;position: relative;top: 0%;">{{findFFname(d.ffid)}}</a>
+                    {{# } else { }}
+                    <i class="fa fa-file fa-2x" style="color: #007DDB;position: relative;top: 10%;">&nbsp;</i>
+                    <a style="color: grey;position: relative;top: 0%;">{{findFname(d.fid)}}</a>
+                    {{# } }}
+                </a>
+            </script>
+
+
+            <!--文件大小为空时-->
+            <script type="text/html" id="size">
+                {{# if(d.size==null){ }}
+                <p>{{ d.size='-' }}</p>
+                {{# }else{ }}
+                <p>{{ sizeformat(d.size) }}</p>
+                {{# } }}
+            </script>
+
+
+            <!--时间格式转换-->
+            <script type="text/html" id="timeformat1">
+                <p>{{ timeformat(d.timeOfDelete) }}</p>
+            </script>
+            <script type="text/html" id="timeformat2">
+                <p>{{ timeformat(d.timeOfEffective) }}</p>
+            </script>
+
+        </div>
+    </div>
+
+
+    <div class="layui-footer">
+        © netdisk - 共享网盘 -lxy
+    </div>
+</div>
+
+
+<script>
+    //JavaScript代码区域
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    window.onload=function () {
+        pageInit();
+    }
+</script>
 </body>
 </html>
